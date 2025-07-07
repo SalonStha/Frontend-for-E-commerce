@@ -1,5 +1,24 @@
 import { Link } from "react-router";
+import { EmailTextInput } from "../../components/form/FormInput";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ForgotPasswordFormDTO, type IForgotPasswordForm } from "./validator";
+import { MailFilled } from "@ant-design/icons";
+
+export interface IForgotPasswordForm {
+    email: string;
+}
+
 const ForgotPassword = () => {
+    const { control, handleSubmit } = useForm({
+        defaultValues: {
+            email: '',
+        } as IForgotPasswordForm, // Default values for the form fields
+        resolver: yupResolver(ForgotPasswordFormDTO) // Using yup for validation schema
+    });
+    const submitForm = (data: IForgotPasswordForm) => {
+        console.log('Form submitted with data:', data);
+    }
     return (
         <>
             <div className="font-poppins flex w-full h-screen flex-col items-center justify-center bg-gray-200">
@@ -7,10 +26,17 @@ const ForgotPassword = () => {
                     <div className="sm:mx-auto sm:w-full rounded-md sm:max-w-md bg-white p-8 shadfont-mediumded-lg">
                             <h2 className="mb-2 text-left text-2xl font-bold leading-9 tracking-tight text-gray-900">Forget Password?<br />No worries</h2>
                             <p className="mb-5 text-left text-sm text-gray-600">Enter your registered email address to get the verification link for password reset.</p>
-                            <form className="space-y-6" action="#" method="POST">
+                            <form className="space-y-6" onSubmit={handleSubmit(submitForm)} action="#" method="POST">
                                 <div>
-                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 mb-2">Enter your email address</label>
-                                    <input id="email" name="email" type="email" autoComplete="email" required className="block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    <EmailTextInput
+                                        name="email"
+                                        control={control}
+                                        label="Enter your email address"
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        startAdornmentIcon={<MailFilled />}
+  
+                                    />
                                 </div>
                                 <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 cursor-pointer py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">SEND</button>
                                 <div className="mt-10 text-center text-sm text-gray-500">
