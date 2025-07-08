@@ -1,16 +1,18 @@
 import { PasswordInput, DropDownInput, DateInput, EmailTextInput, PhoneNumberInput } from "../../components/form/FormInput";
 import { useForm } from "react-hook-form";
 import { RegisterFormDTO, type IRegisterForm } from "./validator";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { KeyOutlined, MailFilled, ShoppingCartOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
+import { FormOutlined, KeyOutlined, MailFilled, ShoppingCartOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Upload } from 'antd';
 import type { UploadFile } from 'antd';
 import { useState } from "react";
-import authService from "../../services/auth.service";
+import { axiosInstance, type SuccessResponse } from "../../config/axios.instance";
+import { toast } from "sonner";
 
 const SignUpPage = () => {
-    const { control, handleSubmit } = useForm<IRegisterForm>({
+    const navigate = useNavigate();
+    const { control, handleSubmit, setValue , setError, formState:{isSubmitting} } = useForm<IRegisterForm>({
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -25,29 +27,68 @@ const SignUpPage = () => {
             gender: '',
             dob: null,
             phoneNumber: '',
-            image: null,
-        } as IRegisterForm, // Default values for the form fields 
-        resolver: yupResolver(RegisterFormDTO) // Using yup for validation schema
+            image: '',
+        } as IRegisterForm,
+        // eslint-disable-next-line
+        resolver: yupResolver(RegisterFormDTO) as any
     });
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-    const submitForm = async(data: IRegisterForm) => {
+    const submitForm = async (data: IRegisterForm) => {
         try {
-            const response = await authService.postRequest('/auth/register',data);
-            console.log('Registration successful:', response.data);
-        } catch (error) {
-            console.error('Registration failed:', error);
+            const response = await axiosInstance.post('auth/signup', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }) as SuccessResponse;
+            toast.success(response.message,{
+                richColors: true,
+                closeButton: true,
+                position: 'top-right',
+                duration: 5000,
+                style: {
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '15px',
+                    margin: '10px',
+                    padding: '20px',
+                },
+            });
+            navigate('/');
+            console.log('Registration successful:', response);
+            // eslint-disable-next-line
+        } catch (exception:any) {
+            console.error('Registration failed:', exception);
+            if(exception.error) {
+                Object.keys(exception.error).map((field) => {
+                    setError(field as keyof IRegisterForm, {
+                        message: exception.error[field],
+                    });
+                });
+            }
+            toast.warning('Registration failed:', {
+                description:'Email should be unique, please try with different email',
+                richColors: true,
+                closeButton: true,
+                position: 'top-right',
+                duration: 5000,
+                style: {
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '15px',
+                    margin: '10px',
+                    padding: '20px',
+                },
+            });
         }
     }
 
     const gender = [
-        { value: 'option1', label: 'Male' },
-        { value: 'option2', label: 'Female' },
-        { value: 'option3', label: 'Other' },
+        { value: 'Male', label: 'Male' },
+        { value: 'Female', label: 'Female' },
+        { value: 'Other', label: 'Other' },
     ];
     const role = [
-        { value: 'option1', label: 'Admin' },
-        { value: 'option2', label: 'Seller' },
-        { value: 'option3', label: 'Customer' },
+        { value: 'Admin', label: 'Admin' },
+        { value: 'Seller', label: 'Seller' },
+        { value: 'Customer', label: 'Customer' },
     ];
 
     return (
@@ -68,7 +109,7 @@ const SignUpPage = () => {
                                         variant="outlined"
                                         placeholder="Enter your first name"
                                         startAdornmentIcon={
-                                            <UserAddOutlined/>
+                                            <UserAddOutlined />
                                         }
                                     />
                                 </div>
@@ -90,7 +131,7 @@ const SignUpPage = () => {
                                     control={control}
                                     type="email"
                                     placeholder="Enter your email address"
-                                    startAdornmentIcon={<MailFilled/>}
+                                    startAdornmentIcon={<MailFilled />}
                                 />
                             </div>
                             <div>
@@ -100,7 +141,7 @@ const SignUpPage = () => {
                                     control={control}
                                     type="password"
                                     placeholder="Enter your password"
-                                    startAdornmentIcon={<KeyOutlined/>}
+                                    startAdornmentIcon={<KeyOutlined />}
                                 />
                             </div>
                             <div>
@@ -110,7 +151,7 @@ const SignUpPage = () => {
                                     control={control}
                                     type="password"
                                     placeholder="Confirm your password"
-                                    startAdornmentIcon={<KeyOutlined/>}
+                                    startAdornmentIcon={<KeyOutlined />}
                                 />
                             </div>
                             <div>
@@ -120,7 +161,7 @@ const SignUpPage = () => {
                                     control={control}
                                     type="text"
                                     placeholder="Enter your shipping address"
-                                    startAdornmentIcon={<ShoppingCartOutlined/>}
+                                    startAdornmentIcon={<ShoppingCartOutlined />}
                                 />
                             </div>
                             <div>
@@ -130,7 +171,7 @@ const SignUpPage = () => {
                                     control={control}
                                     type="text"
                                     placeholder="Enter your billing address"
-                                    startAdornmentIcon={<ShoppingCartOutlined/>}
+                                    startAdornmentIcon={<ShoppingCartOutlined />}
 
 
                                 />
@@ -141,8 +182,6 @@ const SignUpPage = () => {
                                     label="Phone Number"
                                     control={control}
                                     type="number"
-                                    placeholder="Enter your phone number"
-                                    startAdornmentIcon={<ShoppingCartOutlined/>}
                                 />
                             </div>
 
@@ -161,11 +200,19 @@ const SignUpPage = () => {
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Upload
+                                    name="image"
                                     action=""
                                     listType="picture"
                                     defaultFileList={[] as UploadFile[]}
                                     fileList={fileList}
-                                    onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                                    onChange={({ fileList: newFileList }) => {
+                                        setFileList(newFileList);
+                                        if (newFileList.length > 0 && newFileList[0].originFileObj) {
+                                            setValue("image", newFileList[0].originFileObj);
+                                        } else {
+                                            setValue("image", '');
+                                        }
+                                    }}
                                     beforeUpload={() => false}
                                 >
                                     <Button type="primary"
@@ -188,8 +235,10 @@ const SignUpPage = () => {
                             </div>
                             <div>
                                 <Button type="primary"
+                                    icon={<FormOutlined/>}
                                     htmlType="submit"
-                                    className="w-full bg-indigo-600! hover:bg-indigo-700! drop-shadow-lg text-white"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-indigo-600! hover:bg-indigo-700! drop-shadow-lg text-white disabled:bg-indigo-700/30! cursor-not-allowed"
                                     style={{
                                         height: '40px',
                                         fontFamily: 'Poppins, sans-serif',

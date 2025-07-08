@@ -314,7 +314,7 @@ export const PhoneNumberInput = (props: any) => {
 export const ImageInput = (props: any) => {
     return (
         <Controller
-            name="file"
+            name={props.name}
             control={props.control}
             render={({ field, fieldState }) => (
                 <MuiFileInput
@@ -348,6 +348,7 @@ export const ImageInput = (props: any) => {
                         },
                     }}
                 />
+                
             )}
         />
     );

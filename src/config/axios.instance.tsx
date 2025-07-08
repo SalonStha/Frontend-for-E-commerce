@@ -23,14 +23,23 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+export interface SuccessResponse {
+  //eslint-disable-next-line
+  data: any,
+  message: string,
+  status: string,
+  //eslint-disable-next-line
+  options: any,
+}
+
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => {
-        return response.data;
+        return response.data as AxiosResponse; // This will ensure the response is typed correctly
     },
     (exception: AxiosError) => {
         if(exception.response){
-            throw exception.response.data;
+            throw exception.response?.data;
         }else{
             throw exception;
         }

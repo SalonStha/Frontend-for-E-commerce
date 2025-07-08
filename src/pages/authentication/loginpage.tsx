@@ -9,10 +9,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { CredentialsDTO, type ICredentials } from './validator';
 import { EmailTextInput, PasswordInput } from '../../components/form/FormInput';
 import authService from '../../services/auth.service';
-import { KeyOutlined, MailFilled } from '@ant-design/icons';
+import { FormOutlined, KeyOutlined, LoginOutlined, MailFilled } from '@ant-design/icons';
+import { Button } from 'antd';
 
 function LoginPage() {
-    const { control, handleSubmit } = useForm<ICredentials>({
+    const { control, handleSubmit,formState:{isLoading, isSubmitting} } = useForm<ICredentials>({
         defaultValues: {
             email: '',
             password: '',
@@ -59,7 +60,19 @@ function LoginPage() {
                                 <Link to="/forgot-password" className="text-sm font-semibold text-indigo-600 hover:text-indigo-500">Forgot Password?</Link>
                             </div>
                             <div>
-                                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 cursor-pointer py-1.5 text-sm font-regular leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">LOGIN</button>
+                            <Button type="primary"
+                                    icon={<LoginOutlined/>}
+                                    htmlType="submit"
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
+                                    className="w-full bg-indigo-600! hover:bg-indigo-700! drop-shadow-lg text-white disabled:bg-gray-500! disabled:text-gray-300! cursor-progress"
+                                    style={{
+                                        height: '40px',
+                                        fontFamily: 'Poppins, sans-serif',
+                                    }}
+                                >
+                                    LOGIN
+                                </Button>
                             </div>
                         </form><br />
                         <span className="flex items-center">
