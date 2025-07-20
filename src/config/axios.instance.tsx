@@ -7,21 +7,10 @@ export const axiosInstance = axios.create({
   responseType: 'json',
     headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('at'),
         Accept: 'application/json',
     },
 });
-
-// Add a request interceptor
-axiosInstance.interceptors.request.use(
-  function (config) {
-    // Do something before request is sent
-    return config;
-  },
-  function (error) {
-    // Do something with request error
-    console.error('Request error:', error);
-  }
-);
 
 export interface SuccessResponse {
   //eslint-disable-next-line
@@ -45,3 +34,12 @@ axiosInstance.interceptors.response.use(
         }
     }
 );
+
+// Add a request interceptor
+axiosInstance.interceptors.request.use((config) => {
+const token = localStorage.getItem('at'); // Get the token from localStorage
+if (token) {
+    config.headers.Authorization = "Bearer "+ token; // Attach the token to the request headers
+}
+return config;  
+})

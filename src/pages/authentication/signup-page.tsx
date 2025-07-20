@@ -7,12 +7,12 @@ import { FormOutlined, KeyOutlined, MailFilled, ShoppingCartOutlined, UploadOutl
 import { Button, Upload } from 'antd';
 import type { UploadFile } from 'antd';
 import { useState } from "react";
-import { axiosInstance, type SuccessResponse } from "../../config/axios.instance";
 import { toast } from "sonner";
+import authService from "../../services/auth.service";
 
 const SignUpPage = () => {
     const navigate = useNavigate();
-    const { control, handleSubmit, setValue , setError, formState:{isSubmitting} } = useForm<IRegisterForm>({
+    const { control, handleSubmit, setValue, setError, formState: { isSubmitting } } = useForm<IRegisterForm>({
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -35,12 +35,9 @@ const SignUpPage = () => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const submitForm = async (data: IRegisterForm) => {
         try {
-            const response = await axiosInstance.post('auth/signup', data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            }) as SuccessResponse;
-            toast.success(response.message,{
+            const response = await authService.registerUser(data)
+            toast.success('Successfully registered!', {
+                description: response.message, 
                 richColors: true,
                 closeButton: true,
                 position: 'top-right',
@@ -53,11 +50,10 @@ const SignUpPage = () => {
                 },
             });
             navigate('/');
-            console.log('Registration successful:', response);
             // eslint-disable-next-line
-        } catch (exception:any) {
+        } catch (exception: any) {
             console.error('Registration failed:', exception);
-            if(exception.error) {
+            if (exception.error) {
                 Object.keys(exception.error).map((field) => {
                     setError(field as keyof IRegisterForm, {
                         message: exception.error[field],
@@ -65,17 +61,7 @@ const SignUpPage = () => {
                 });
             }
             toast.warning('Registration failed:', {
-                description:'Email should be unique, please try with different email',
-                richColors: true,
-                closeButton: true,
-                position: 'top-right',
-                duration: 5000,
-                style: {
-                    fontFamily: 'Poppins, sans-serif',
-                    fontSize: '15px',
-                    margin: '10px',
-                    padding: '20px',
-                },
+                description: 'Sorry! The entered email is already registered. Please try with a different email.',
             });
         }
     }
@@ -139,7 +125,6 @@ const SignUpPage = () => {
                                     name="password"
                                     label="Password"
                                     control={control}
-                                    type="password"
                                     placeholder="Enter your password"
                                     startAdornmentIcon={<KeyOutlined />}
                                 />
@@ -149,7 +134,6 @@ const SignUpPage = () => {
                                     name="confirmPassword"
                                     label="Confirm Password"
                                     control={control}
-                                    type="password"
                                     placeholder="Confirm your password"
                                     startAdornmentIcon={<KeyOutlined />}
                                 />
@@ -235,7 +219,7 @@ const SignUpPage = () => {
                             </div>
                             <div>
                                 <Button type="primary"
-                                    icon={<FormOutlined/>}
+                                    icon={<FormOutlined />}
                                     htmlType="submit"
                                     disabled={isSubmitting}
                                     className="w-full bg-indigo-600! hover:bg-indigo-700! drop-shadow-lg text-white disabled:bg-indigo-700/30! cursor-not-allowed"

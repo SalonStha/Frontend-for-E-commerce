@@ -3,17 +3,21 @@ import logo from '../../../src/assets/images/logo.png';
 import googleLogo from '../../../src/assets/images/google-logo.png';
 import appleLogo from '../../../src/assets/images/apple-logo.png';
 import facebookLogo from '../../../src/assets/images/facebook-logo.png';
-import { Link } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CredentialsDTO, type ICredentials } from './validator';
 import { EmailTextInput, PasswordInput } from '../../components/form/FormInput';
 import authService from '../../services/auth.service';
-import { FormOutlined, KeyOutlined, LoginOutlined, MailFilled } from '@ant-design/icons';
+import { KeyOutlined, LoginOutlined, MailFilled } from '@ant-design/icons';
 import { Button } from 'antd';
+import { toast } from 'sonner';
+import { useAuth } from '../../context/auth.context';
+
 
 function LoginPage() {
-    const { control, handleSubmit,formState:{isLoading, isSubmitting} } = useForm<ICredentials>({
+    const navigate = useNavigate();
+    const { control, handleSubmit,formState:{isLoading, isSubmitting}, setError } = useForm<ICredentials>({ // React Hook Form for form handling
         defaultValues: {
             email: '',
             password: '',
@@ -21,16 +25,40 @@ function LoginPage() {
         resolver: yupResolver(CredentialsDTO) // Using yup for validation schema,
     }); // Assuming useState is used for form handling, but not implemented in this snippet
 
-    const submitForm = async (credentials: ICredentials) => {
-        try {
-            const response = await authService.postRequest('/auth/login',credentials)
-            console.log('Login successful:', response.data);
+    const {setLoggedInUserProfile} = useAuth(); // Custom hook to access authentication context
 
-        } catch (error) {
-            console.error('Login failed:', error);
+    const submitForm = async (credentials: ICredentials) => {
+        try{
+            await authService.loginUser(credentials);
+            const userProfile = await authService.getUserProfile();
+            console.log('User Profile:', userProfile);
+            toast.success('Welcome to ' + userProfile.data.role + ' Dashboard', {
+                description: `You have successfully logged in as ${userProfile.data.firstName} ${userProfile.data.lastName}.`,
+                icon: '👏', // You can use any icon or leave it out
+            });
+            setLoggedInUserProfile(userProfile.data); // Set the user profile in the context
+            navigate('/admin'+userProfile.data.role.toLowerCase()); // Redirect to dashboard after successful login.
+            // eslint-disable-next-line
+        } catch (exception:any) {
+            if (exception.error) {
+                Object.keys(exception.error).map((field) => {
+                    setError(field as keyof ICredentials, {
+                        message: exception.error[field],
+                    });
+                });
+            }
+            toast.error('Login Failed', {
+                description: exception?.message,
+            });
         }
+        
     }
-    return (
+    const {loggedInUser} = useAuth(); // Custom hook to access authentication context
+    if (loggedInUser) {
+        return <Navigate to={`/${loggedInUser.role}`} />;
+    }
+
+    return ( 
         <>
             <div className="font-poppins flex w-full h-screen flex-col items-center justify-center bg-gray-200">
                 <img src={logo} alt="Sasto Bazzar" className="mx-auto mb-4 max-w-[250px] w-full h-auto object-contain" />
@@ -41,7 +69,7 @@ function LoginPage() {
                             <EmailTextInput
                                 control={control}
                                 name="email"
-                                type="text"
+                                type="email"
                                 label="Enter your email address"
                                 startAdornmentIcon={<MailFilled />}
                                 placeholder="Enter your email address"
@@ -50,7 +78,6 @@ function LoginPage() {
                                 <PasswordInput
                                     control={control}
                                     name="password"
-                                    type="password"
                                     label="Enter your password"
                                     placeholder="Enter your password"
                                     startAdornmentIcon={<KeyOutlined/>}
@@ -111,3 +138,5 @@ function LoginPage() {
     );
 };
 export default LoginPage;
+
+

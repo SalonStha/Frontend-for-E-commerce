@@ -28,8 +28,13 @@ return (
         <Menu
         theme='dark'
           mode="inline"
+          className="bg-gray-900! text-white"
           defaultSelectedKeys={['1']}
-          className='bg-gray-900!'
+          style={{
+            fontFamily: 'Poppins, sans-serif',
+            fontSize: '14px',
+            color: '#fff',
+          }}
           items={menu}
         />
       </Sider>

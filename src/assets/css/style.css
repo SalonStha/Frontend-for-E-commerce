@@ -1,2 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 @import "tailwindcss";
+
+.poppins-table, .poppins-table * {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: small
+}
+.ant-steps,
+.ant-steps-item,
+.ant-steps-item-title,
+.ant-steps-item-description,
+.ant-steps-item-content {
+  font-family: 'Poppins', sans-serif;
+}
+.ant-steps-item-title {
+  font-weight: bold;
+}
+
+.steps-responsive {
+    max-width: 700px; /* or whatever max you want */
+    margin: 0 auto;
+    min-width: 250px;
+    font-family: 'Poppins' !important;
+  }
+
+  .ant-btn {
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  .ant-search {
+    font-family: 'Poppins', sans-serif !important; 
+  }
+  
+  .custom-indigo-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #6366f1 !important;
+    border-color: #6366f1 !important;
+  }
+  .custom-indigo-checkbox .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: #6366f1 !important;
+  }
+  
+  @media (max-width: 600px) {
+    .steps-responsive {
+      max-width: 100%;
+      padding: 0 8px;
+    }
+  }

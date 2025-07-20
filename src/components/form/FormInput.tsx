@@ -3,15 +3,18 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-import { useState } from 'react';
-import { Controller } from 'react-hook-form';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Controller, type ControllerRenderProps } from 'react-hook-form';
+import { FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MuiTelInput } from 'mui-tel-input';
-import { MuiFileInput } from 'mui-file-input';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { Button, Upload, type UploadFile } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import './../../assets/css/style.css';
+import { Autocomplete, TextField } from '@mui/material';
 
 
 export const EmailTextInput = (props: any) => {
@@ -44,7 +47,7 @@ export const EmailTextInput = (props: any) => {
                         </InputLabel>
                         <OutlinedInput
                             id={`${props.name}`}
-                            type="email"
+                            type={props.type || 'text'}
                             placeholder={props.placeholder}
                             value={value}
                             onChange={({ target: { value } }) => {
@@ -92,10 +95,10 @@ export const PasswordInput = (props: any) => {
     const { startAdornmentIcon } = props;
     const propsObj = { ...props }
     delete propsObj.setValue
-    const [showPassword, setShowPassword] = useState(true); // Default to true to show password initially
+    const [showPassword, setShowPassword] = useState(false); 
 
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-    return (
+    const handleClickShowPassword = () => setShowPassword((show) => !show); 
+    return ( 
         <>
             <Controller
                 name={props.name}
@@ -131,10 +134,10 @@ export const PasswordInput = (props: any) => {
                                 <InputAdornment position="end">
                                     <IconButton
                                         aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
+                                        onClick={handleClickShowPassword} 
                                         edge="end"
                                     >
-                                        {showPassword ? <Visibility/> : <VisibilityOff/>}
+                                        {showPassword ? <Visibility/> : <VisibilityOff/>} 
                                     </IconButton>
                                 </InputAdornment>
                             }
@@ -201,13 +204,25 @@ export const DropDownInput = (props: any) => {
                 render={({ field, fieldState: { error } }) => (
                     <>
                         <Select
-                            labelId={`${props.name}-label`}
-                            label={props.label}
-                            {...field}
-                            error={!!error}
-                        >
-                            {props.options.map((option: any) => (
-                                <MenuItem key={option.value} value={option.value}>
+                             onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                }
+                              }}
+                              labelId={`${props.name}-label`}
+                              label={props.label}
+                              {...field}
+                              error={!!error}
+                              native={false} 
+                            >
+                                {props.options.map((option: any) => (
+                                    <MenuItem key={option.value} value={option.value}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                        }
+                                      }}
+                                    >
                                     {option.label}
                                 </MenuItem>
                             ))}
@@ -311,45 +326,166 @@ export const PhoneNumberInput = (props: any) => {
     );
 };
 
-export const ImageInput = (props: any) => {
+export const ImageUploadInput = (props: any) => {
+    const { name, control, setValue, defaultUrl, defaultName = 'logo.png', setLogoMode } = props;
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+    useEffect(() => {
+        if (defaultUrl) {
+            setFileList([{
+                uid: '-1',
+                name: defaultName,
+                status: 'done',
+                url: defaultUrl,
+            }]);
+            if (setLogoMode) setLogoMode('existing');
+        } else {
+            setFileList([]);
+            if (setLogoMode) setLogoMode('removed');
+        }
+    }, [defaultUrl, defaultName, setLogoMode]);
+
+
     return (
         <Controller
-            name={props.name}
-            control={props.control}
-            render={({ field, fieldState }) => (
-                <MuiFileInput
-                    {...field}
-                    helperText={fieldState.invalid ? "File is invalid" : ""}
-                    fullWidth
-                    size="small"
-                    label={props.label}
-                    error={fieldState.invalid}
-                    sx={{
-                        '.MuiInputBase-input': {
-                            fontFamily: 'poppins', // Change to your desired font family
-                        },
-                        '.MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: '#4B0082',
-                                borderWidth: '1.5px',
-                                // Default border color
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#4B0082', // Border color when focused
-                            },
-                        },
-                        '.MuiInputLabel-root': {
-                            color: '#4B0082', // Label color
-                            fontFamily: 'poppins',
-                            fontSize: '14px',
-                        },
-                        '.MuiInputLabel-root.Mui-focused': {
-                            color: '#4B0082',
-                        },
+            name={name}
+            control={control}
+            render={() => (
+                <Upload
+                    name="image"
+                    listType="picture"
+                    fileList={fileList}
+                    maxCount={1}
+                    onChange={({ fileList: newFileList }) => {
+                        // Only keep the latest file
+                        const latestFileList = newFileList.slice(-1);
+                        setFileList(latestFileList);
+                        if (latestFileList.length > 0 && latestFileList[0].originFileObj) {
+                            setValue(name, latestFileList[0].originFileObj);
+                            if (setLogoMode) setLogoMode('new');
+                        } else {
+                            setValue(name, '');
+                            if (setLogoMode) setLogoMode('removed');
+                        }
                     }}
-                />
-                
+                    beforeUpload={() => false}
+                >
+                    <Button
+                        type="primary"
+                        icon={<UploadOutlined />}
+                        className="bg-indigo-600! hover:bg-indigo-500! text-white"
+                        style={{
+                            width: '200px',
+                            height: '42px',
+                            fontFamily: 'Poppins, sans-serif',
+                        }}
+                    >
+                        {props.name === 'image' ? 'Upload Image' : 'Upload Icon'}
+                    </Button>
+                </Upload>
             )}
         />
     );
 };
+
+export const CheckboxInput = (props: any) => {
+    return (
+        <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field }: { field: ControllerRenderProps<any, any> }) => (
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            {...field}
+                            checked={!!field.value}
+                            sx={{
+                                color: '#6366f1',
+                                '&.Mui-checked': {
+                                    color: '#6366f1',
+                                },
+                            }}
+                        />
+                    }
+                    label={<span style={{ pointerEvents: 'none' }}>{props.label}</span>}
+                    sx={{
+                        fontFamily: 'Poppins, sans-serif',
+                        '.MuiFormControlLabel-label': {
+                            fontFamily: 'Poppins, sans-serif',
+                            fontSize: '15px',
+                            color: '#333',
+                        },
+                    }}
+                    labelPlacement="end"
+                />
+            )}
+        />
+    );
+};
+
+export const MultipleDropdownInput = (props: any) => {
+    return (
+        <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field, fieldState: { error } }) => (
+                <Autocomplete
+                    multiple
+                    options={props.options}
+                    getOptionLabel={(option) => option.label}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    value={props.options.filter((opt: any) => field.value?.includes(opt.value))}
+                    onChange={(_, newValue) => {
+                        field.onChange(newValue.map((opt: any) => opt.value));
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={props.label}
+                            error={!!error}
+                            helperText={error ? error.message : ''}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                                fontFamily: 'poppins',
+                                fontSize: '14px',
+                                backgroundColor: '#fff',
+                                '.MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#4B0082',
+                                    borderWidth: '1.5px',
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#4B0082',
+                                },
+                                '.MuiInputBase-input': {
+                                    fontFamily: 'poppins',
+                                    backgroundColor: '#fff',
+                                },
+                                '.MuiInputLabel-root': {
+                                    color: '#4B0082',
+                                    fontFamily: 'poppins',
+                                    fontSize: '14px',
+                                },
+                                '.MuiInputLabel-root.Mui-focused': {
+                                    color: '#4B0082',
+                                },
+                            }}
+                        />
+                    )}
+                    ListboxProps={{
+                        style: {
+                            maxHeight: 200,
+                            overflow: 'auto',
+                        },
+                    }}
+                    sx={{
+                        '.MuiAutocomplete-tag': {
+                            fontFamily: 'poppins',
+                            fontSize: '14px',
+                        },
+                    }}
+                />
+            )}
+        />
+    );
+}

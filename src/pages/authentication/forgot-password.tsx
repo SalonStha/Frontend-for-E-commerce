@@ -4,21 +4,40 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ForgotPasswordFormDTO, type IForgotPasswordForm } from "./validator";
 import { MailFilled } from "@ant-design/icons";
+import authService from "../../services/auth.service";
+import { toast } from "sonner";
+import type { SuccessResponse } from "../../config/axios.instance";
 
-export interface IForgotPasswordForm {
-    email: string;
-}
 
 const ForgotPassword = () => {
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, setError } = useForm({
         defaultValues: {
             email: '',
         } as IForgotPasswordForm, // Default values for the form fields
         resolver: yupResolver(ForgotPasswordFormDTO) // Using yup for validation schema
     });
-    const submitForm = (data: IForgotPasswordForm) => {
-        console.log('Form submitted with data:', data);
+    const submitForm = async(data: IForgotPasswordForm) => {
+        try{
+            const response = await authService.forgetPassword(data) as unknown as SuccessResponse;
+            toast.success('Email sent successfully!', {
+                description: response.message},
+            );
+            // eslint-disable-next-line
+        } catch (exception:any) {
+            console.error('Email sent failed:', exception);
+            if (exception.error) {
+                Object.keys(exception.error).map((field) => {
+                    setError(field as keyof IForgotPasswordForm, {
+                        message: exception.error[field],
+                    });
+                });
+            }
+            toast.error('Failed to send verification link', {
+                description: 'Sorry! The entered email is not registered.'
+            });
+        }
     }
+
     return (
         <>
             <div className="font-poppins flex w-full h-screen flex-col items-center justify-center bg-gray-200">
