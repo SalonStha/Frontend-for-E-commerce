@@ -1,4 +1,3 @@
-
 import type { ICategoryData } from "../pages/categories/Categoryvalidator";
 import BaseService from "./base.service";
 

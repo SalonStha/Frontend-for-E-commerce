@@ -14,12 +14,13 @@ import BannerPage from "../pages/banner/BannerPage";
 import BrandPage from "../pages/brand/BrandPage";
 import ProductsPage from "../pages/products/ProductsPage";
 import UserPage from "../pages/user/UserPage";
-import ProductCreatePage from "../pages/products/ProductCreatePage";
 import AddBrand from "../pages/brand/AddBrand";
 import UpdateBrand from "../pages/brand/UpdateBrand";
 import CategoryPage from "../pages/categories/CategoryPage";
 import AddCategory from "../pages/categories/AddCategory";
 import UpdateCategory from "../pages/categories/UpdateCategory";
+import UpdateUser from "../pages/user/UpdateUser";
+import AddProduct from "../pages/products/AddProducts";
 
 
 
@@ -54,14 +55,15 @@ const routerConfig = createBrowserRouter([ // Creating a browser router configur
         children: [
             { index: true, Component: AdminDashboard },
             { path: "users", Component: UserPage }, 
+            { path: "users/:id", Component: UpdateUser }, 
             { path: "brands", Component: BrandPage }, 
             { path: "brands/create", Component: AddBrand },
             { path: "brands/:id", Component: UpdateBrand },
             { path: "category", Component: CategoryPage }, 
+            { path: "products", Component: ProductsPage }, 
+            { path: "products/create", Component: AddProduct }, 
             { path: "category/:id", Component: UpdateCategory }, 
             { path: "category/create", Component: AddCategory },
-            { path: "products", Component: ProductsPage },
-            { path: "products/create", Component: ProductCreatePage },
             { path: "transactions", Component: AdminDashboard },
             { path: "orders", Component: AdminDashboard },
             { path: "banners", Component: BannerPage },

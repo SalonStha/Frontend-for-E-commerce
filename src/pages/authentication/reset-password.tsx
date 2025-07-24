@@ -58,7 +58,6 @@ const ResetPassword = () => {
                                         name="password"
                                         control={control}
                                         label="Enter your new password"
-                                        placeholder="Enter your new password"
                                         startAdornmentIcon={<KeyOutlined/>}
                                         className="mb-9" // Add margin bottom for spacing
                                     />
@@ -66,7 +65,6 @@ const ResetPassword = () => {
                                         name="confirmPassword"
                                         control={control}
                                         label="Confirm your new password"
-                                        placeholder="Confirm your new password"
                                         startAdornmentIcon={<KeyOutlined/>}
                                     />
                                 </div>

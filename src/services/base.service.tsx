@@ -30,6 +30,15 @@ abstract class BaseService {
         }
     }
 
+    async patchRequest(url: string, data: any = null, config: IConfigParams = {}): Promise<SuccessResponse> {
+        try {
+            return await axiosInstance.patch(url, data, config);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
+        }
+    }
+
     async deleteRequest(url: string, config: IConfigParams = {}): Promise<SuccessResponse> {
         try {
             return await axiosInstance.delete(url, config);

@@ -1,73 +1,89 @@
-import { EditFilled, FileAddFilled, DeleteFilled, HomeFilled, ApartmentOutlined } from "@ant-design/icons";
+import { EditFilled, FileAddFilled, DeleteFilled, UserOutlined, HomeFilled } from "@ant-design/icons";
 import { Divider } from "@mui/material";
-import { Breadcrumb, Button, Input, Table, Tag } from "antd";
+import { Breadcrumb, Button, Input, Table } from "antd";
 import { NavLink } from "react-router";
 import './../../assets/css/style.css';
-import type { ICategoryData } from "./Categoryvalidator";
 import { useEffect, useState } from "react";
-import categoryService from "../../services/category.service";
 import { toast } from "sonner";
-import { PaginationDefault, Status, type IPagination, type IPaginationSearch } from "../../config/constant";
+import { PaginationDefault, Status, UserRoles, type IPagination, type IPaginationSearch } from "../../config/constant";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import userService from "../../services/user.service";
+import type { IRegisterForm } from "../authentication/validator";
 
-const CategoryPage = () => {
+const UserPage = () => {
 
     const [open, setOpen] = useState(false);
 
-    const [selectedCategory, setselectedCategory] = useState<ICategoryData | null>(null);
+    const [selectedUser, setselectedUser] = useState<IRegisterForm | null>(null);
 
     const [loading, setLoading] = useState(false);
 
-    const handleDelete = async (categoryId: string) => {
+    const handleDelete = async (userId: string) => {
         setLoading(true);
         try {
-            await categoryService.deleteRequest('category/' + categoryId);
-            toast.success('Category deleted successfully!', {
-                description: 'The selected category has been successfully deleted.',
+            await userService.deleteRequest('user/' + userId);
+            toast.success('User deleted successfully!', {
+                description: 'The selected user has been successfully deleted.',
             });
-            await getCategories({ page: PaginationDefault.page, limit: PaginationDefault.limit })
+            await getUsers({ page: PaginationDefault.page, limit: PaginationDefault.limit })
         } catch {
-            toast.error('Failed to delete category:', {
-                description: 'An error occurred while deleting the brand. Please try again.',
+            toast.error('Failed to delete user:', {
+                description: 'An error occurred while deleting the user. Please try again.',
             });
         }
         setOpen(false);
-        setselectedCategory(null);
+        setselectedUser(null);
         setLoading(false);
     };
+    //eslint-disable-next-line
+    const renderRoleTag = (role: any) => {
+        if (role === UserRoles.ADMIN) {
+            return <span className="bg-fuchsia-600 text-white rounded-md p-1.5 text-xs font-light">Admin</span>;
+        }
+        if (role === UserRoles.SELLER) {
+            return <span className="bg-blue-600 text-white rounded-md p-1.5 text-xs font-light">Seller</span>;
+        }
+        if (role === UserRoles.CUSTOMER) {
+            return <span className="bg-indigo-600 text-white rounded-md p-1.5 text-xs font-light">Customer</span>;
+        }
+        return <span className="bg-gray-300 text-black rounded-md p-1.5 text-xs font-light">{role}</span>;
+    };
     const columns = [
-        { title: 'Icon', dataIndex: 'icon', key: 'icon', render: (icon: string) => <img src={icon} alt="Brand" style={{ width: '50px', height: '50px' }} /> },
-        { title: 'Sub Category', dataIndex: 'name', key: 'name', },
-        { title: 'Main Category', dataIndex: 'parentId', key: 'parentId', render: (parentCategory: { name?: string } | undefined) => parentCategory?.name || '-' },
         {
-            title: 'Brand',
-            dataIndex: 'brands',
-            key: 'brands',
-            render: (brands: { name: string }[] = []) => {
-                const colors = ['#6366f1', '#22d3ee', '#f59e42', '#10b981', '#ef4444', '#a21caf', '#fbbf24'];
-                return (
-                    <>
-                        {brands.map((b, idx) => (
-                            <Tag key={idx} style={{ backgroundColor: colors[idx % colors.length], color: '#fff', border: 'none', marginBottom: 2 }}>
-                                {b.name}
-                            </Tag>
-                        ))}
-                    </>
-                );
-            }
+            title: 'Image',
+            dataIndex: 'image',
+            key: 'image',
+            render: (image: { optimizedUrl?: string }) => (
+                <img
+                    src={image?.optimizedUrl || "/default-user.png"}
+                    alt="User"
+                    style={{
+                        width: '50px',
+                        height: '50px',
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                        border: '1px solid #e5e7eb',
+                        background: '#f3f4f6'
+                    }}
+                />
+            ),
         },
-        { title: 'Home Feature', dataIndex: 'homeFeature', key: 'homeFeature', render: (homeFeature: boolean) => homeFeature ? 'Yes' : 'No' },
-        { title: 'Show In Menu', dataIndex: 'showInMenu', key: 'showInMenu', render: (showInMenu: boolean) => showInMenu ? 'Yes' : 'No' },
+        { title: 'First Name', dataIndex: 'firstName', key: 'firstName', },
+        { title: 'Last Name', dataIndex: 'lastName', key: 'lastName', },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { title: 'Phone Number', dataIndex: 'phoneNumber', key: 'phoneNumber' },
+        { title: 'Gender', dataIndex: 'gender', key: 'gender' },
+        { title: 'Role', dataIndex: 'role', key: 'role', render: renderRoleTag },
         { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-700 text-white rounded-md p-1.5 text-xs! font-light">Active</span> : <span className="bg-red-500 text-white rounded-md p-1.5">Inactive</span> },
         {
-            title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: ICategoryData) => {
+            title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: IRegisterForm) => {
                 return (
                     <>
-                        <NavLink to={'/admin/category/' + id}>
+                        <NavLink to={'/admin/users/' + id}>
                             <Button type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9! mr-2"><EditFilled /></Button>
                         </NavLink>
-                        <Button type="primary" danger className="items-center p-3! h-9!" onClick={() => { setOpen(true); setselectedCategory(data); }}><DeleteFilled /></Button>
+                        <Button type="primary" danger className="items-center p-3! h-9!" onClick={() => { setOpen(true); setselectedUser(data); }}><DeleteFilled /></Button>
                     </>
                 )
             }
@@ -75,14 +91,14 @@ const CategoryPage = () => {
 
     ];
     const [search, setSearch] = useState<string>('');
-    const [data, setData] = useState<ICategoryData[]>([]);
+    const [data, setData] = useState<IRegisterForm[]>([]);
     const [pagination, setPagination] = useState<IPagination>({
         current: PaginationDefault.page,
         pageSize: PaginationDefault.limit,
         total: PaginationDefault.total,
     });
 
-    const getCategories = async (
+    const getUsers = async (
         {
             page = PaginationDefault.page,
             limit = PaginationDefault.limit,
@@ -90,7 +106,7 @@ const CategoryPage = () => {
         }: IPaginationSearch) => {
         setLoading(true);
         try {
-            const response = await categoryService.getRequest('/category', {
+            const response = await userService.getRequest('user', {
                 params: {
                     page: page,
                     limit: limit,
@@ -106,16 +122,16 @@ const CategoryPage = () => {
             })
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching categories:', error);
-            toast.error('Failed to fetch categories.', {
-                description: 'An error occurred while fetching categories. Please try again.',
+            console.error('Error fetching users:', error);
+            toast.error('Failed to fetch users.', {
+                description: 'An error occurred while fetching users. Please try again.',
             });
             setLoading(false);
         }
     };
 
     // useEffect(() => {
-    //     getCategories({
+    //     getUsers({
     //         page: PaginationDefault.page,
     //         limit: PaginationDefault.limit,
     //         search: null,
@@ -124,7 +140,7 @@ const CategoryPage = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            getCategories({
+            getUsers({
                 page: PaginationDefault.page,
                 limit: PaginationDefault.limit,
                 search: search,
@@ -135,7 +151,7 @@ const CategoryPage = () => {
 
 
     const onPaginationChange = async (page: number, pageSize: number) => {
-        await getCategories({
+        await getUsers({
             page: page,
             limit: pageSize,
         });
@@ -163,7 +179,7 @@ const CategoryPage = () => {
                         gap: '20px',
                     }}>
                         <div className="dual-ring-spinner" style={{ width: 64, height: 64 }} />
-                        <span style={{ fontSize: 20, color: '#fff', fontFamily: 'Poppins, sans-serif', fontWeight: 500 }}>Loading categories...</span>
+                        <span style={{ fontSize: 20, color: '#fff', fontFamily: 'Poppins, sans-serif', fontWeight: 500 }}>Loading users...</span>
                     </div>
                     <style>{`
                         .dual-ring-spinner {
@@ -195,36 +211,36 @@ const CategoryPage = () => {
             }}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-poppins! font-semibold mb-2">Categories</h2>
-                        <Breadcrumb
-                            style={{
-                                margin: '16px 0',
-                                fontFamily: 'Poppins, sans-serif',
-                                color: '#fffff',
-                                fontSize: '15px',
-                                fontWeight: '500',
-                            }}
-                            items={[
-                                {
-                                    href: '/admin',
-                                    title: (
-                                        <>
-                                            <HomeFilled />
-                                            <span>Dashboard</span>
-                                        </>
-                                    ),
-                                },
-                                {
-                                    title: (
-                                        <>
-                                            <ApartmentOutlined />
-                                            <span>Category</span>
-                                        </>
-                                    ),
-                                },
-                            ]}
-                        />
-                    </div>
+                    <h2 className="text-2xl font-poppins! font-semibold mb-2">Users</h2>
+                    <Breadcrumb
+                    style={{
+                        margin: '16px 0',
+                        fontFamily: 'Poppins, sans-serif',
+                        color: '#fffff',
+                        fontSize: '15px',
+                        fontWeight: '500',
+                    }}
+                        items={[
+                            {
+                                href: '/admin',
+                                title: (
+                                    <>
+                                        <HomeFilled/>
+                                        <span>Dashboard</span>
+                                    </>
+                                ),
+                            },
+                            {
+                                title: (
+                                    <>
+                                        <UserOutlined />
+                                        <span>Users</span>
+                                    </>
+                                ),
+                            },
+                        ]}
+                    />
+                    </div> 
                     <div className="flex justify-center! items-center! gap-5">
                         <Input.Search
                             placeholder="Type to search..."
@@ -242,9 +258,9 @@ const CategoryPage = () => {
                             }}
                             enterButton
                         />
-                        <NavLink to='/admin/category/create'>
+                        <NavLink to='/admin/users/create'>
                             <Button icon={<FileAddFilled />} type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9.5!">
-                                Add category
+                                Add User
                             </Button>
                         </NavLink>
                     </div>
@@ -264,7 +280,7 @@ const CategoryPage = () => {
                         style={{ fontFamily: 'Poppins, sans-serif', fontSize: '15px' }}
                         rowKey="_id"
                     />
-                    <Dialog open={open} onClose={() => { setOpen(false); setselectedCategory(null); }} className="relative z-10">
+                    <Dialog open={open} onClose={() => { setOpen(false); setselectedUser(null); }} className="relative z-10">
                         <DialogBackdrop
                             transition
                             className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -282,15 +298,15 @@ const CategoryPage = () => {
                                             </div>
                                             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
-                                                    Delete Category
+                                                    Delete User
                                                 </DialogTitle>
                                                 <div className="mt-2">
                                                     <p className="text-sm text-gray-500">
-                                                        Are you sure you want to delete this category? This action cannot be undone.
+                                                        Are you sure you want to delete this user? Only Admin can recover this user.
                                                     </p>
-                                                    {selectedCategory && (
+                                                    {selectedUser && (
                                                         <div className="mt-2 text-sm text-gray-700">
-                                                            <strong>Name:</strong> {selectedCategory.name}
+                                                            <strong>Name:</strong> {selectedUser.firstName} {selectedUser.lastName}
                                                         </div>
                                                     )}
                                                 </div>
@@ -300,7 +316,7 @@ const CategoryPage = () => {
                                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                         <button
                                             type="button"
-                                            onClick={() => selectedCategory && handleDelete(selectedCategory._id)}
+                                            onClick={() => selectedUser && handleDelete(selectedUser._id)}
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto cursor-pointer"
                                         >
                                             Delete
@@ -324,4 +340,4 @@ const CategoryPage = () => {
     )
 }
 
-export default CategoryPage;
+export default UserPage;

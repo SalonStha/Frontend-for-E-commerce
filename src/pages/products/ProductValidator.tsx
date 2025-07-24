@@ -1,31 +1,45 @@
 import * as yup from 'yup';
-export interface IProductForm {
+
+export interface IProductData {
+    _id: string;
     name: string;
     description: string;
-    category: string[];
-    brand: string;
     price: number;
-    stock: number;
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    images: null | any;
-    tags?: string[];
-    attributes?: Record<string, string>;
-    sku?: string;
-    status?: string;
-    homeFeatured?: boolean;
+    discount?: number;
+    category: string[];
+    tags: string[];
+    stock: string;
+    brand?:string;
+    attributes:string[];
+    sku:string;
+    homeFeature: boolean;
+    status: string;
+    images?: File | string | null; // Assuming logo can be a File object or a string URL
+    actions?: React.ReactNode; // Optional actions like edit/delete buttons
 }
 
-export const ProductValidatorDTO =  yup.object().shape({
-    name: yup.string().required('Product name is required').min(3, 'Product name must be at least 3 characters long'),
-    description: yup.string().required('Product description is required').min(10, 'Product description must be at least 10 characters long'),
-    category: yup.string().required('Product category is required'),
-    brand: yup.string().required('Product brand is required'),
+export const ProductDTO = yup.object().shape({
+    name: yup.string().required('Product name is required'),
+    description: yup.string().required('A short description is required'),
     price: yup.number().required('Price is required'),
-    stock: yup.number().required('Stock is required'),
-    images: yup.array().of(yup.string().url('Each image must be a valid URL')).required('At least one product image is required'),
-    tags: yup.array().of(yup.string()).optional(),
-    attributes: yup.object().optional(),
-    sku: yup.string().optional(),
-    status: yup.string().optional(),
-    homeFeatured: yup.boolean().optional()
+    discount: yup.string().optional().nullable(),
+    category: yup.array().of(yup.string()).required('Category is required'),
+    tags: yup.array().of(yup.string()).optional().nullable(),
+    stock: yup.string().required('Stock is required'),
+    brand: yup.string(),
+    attributes: yup.array().of(yup.string()).optional().nullable(),
+    sku: yup.string().required().optional().nullable(),
+    status: yup.string().required('Status is required'),
+    images: yup.mixed().required('Image is required'),
+    homeFeature: yup.boolean().optional().nullable(),
+});
+
+export const UpdateCategoryDTO = yup.object().shape({
+    name: yup.string().required('Category name is required'),
+    status: yup.string().required('Status is required'),
+    icon: yup.mixed().optional().nullable(),
+    parentId: yup.string().optional().nullable(),
+    brands: yup.array().of(yup.string()).required('Brand is required'),
+    showInMenu: yup.boolean().optional().nullable(),
+    homeFeature: yup.boolean().optional().nullable(),
 });

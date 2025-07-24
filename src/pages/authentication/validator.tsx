@@ -11,6 +11,7 @@ export const CredentialsDTO = yup.object().shape({
 });
 
 export interface IRegisterForm {
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -24,7 +25,8 @@ export interface IRegisterForm {
         shippingAddress: string;
     }
     dob?: Date | null;
-    image: File | '';
+    image: File | null | string;
+    actions?: React.ReactNode; // Optional actions like edit/delete buttons
 }
 // Accepts: +977 980-0000000, +9779800000000, 9800000000, 980-0000000, etc.
 const phoneRegex = /^(\+977[-\s]?)?(98|97|96|90)\d{1}[-\s]?\d{3}[-\s]?\d{4}$/;
@@ -45,6 +47,12 @@ export const RegisterFormDTO = yup.object().shape({
     }),
     dob: yup.date().nullable().optional(),
     image: yup.mixed().nullable().optional(),
+});
+
+export const UpdateRegisterFormDTO = yup.object().shape({
+    firstName: yup.string().required('First name is required'),
+    lastName: yup.string().nullable().optional(),
+    role: yup.string().nullable().optional().oneOf(Object.values(UserRoles), 'Select a role'),
 });
 
 export interface IForgotPasswordForm {

@@ -1,6 +1,6 @@
-import { EditFilled, FileAddFilled, DeleteFilled } from "@ant-design/icons";
+import { EditFilled, FileAddFilled, DeleteFilled, HomeFilled,BranchesOutlined } from "@ant-design/icons";
 import { Divider } from "@mui/material";
-import { Button, Input, Table } from "antd";
+import { Breadcrumb, Button, Input, Table } from "antd";
 import { NavLink } from "react-router";
 import './../../assets/css/style.css';
 import type { IBrandData } from "./Brandvalidator";
@@ -173,8 +173,38 @@ const BrandPage = () => {
                 fontFamily: 'Poppins, sans-serif',
                 color: '#333',
             }}>
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between">
+                <div>
                     <h2 className="text-2xl font-poppins! font-semibold mb-2">Brands</h2>
+                    <Breadcrumb
+                    style={{
+                        margin: '16px 0',
+                        fontFamily: 'Poppins, sans-serif',
+                        color: '#fffff',
+                        fontSize: '15px',
+                        fontWeight: '500',
+                    }}
+                        items={[
+                            {
+                                href: '/admin',
+                                title: (
+                                    <>
+                                        <HomeFilled/>
+                                        <span>Dashboard</span>
+                                    </>
+                                ),
+                            },
+                            {
+                                title: (
+                                    <>
+                                        <BranchesOutlined />
+                                        <span>Brand</span>
+                                    </>
+                                ),
+                            },
+                        ]}
+                    />
+                    </div>  
                     <div className="flex justify-center! items-center! gap-5">
                         <Input.Search
                             placeholder="Type to search..."

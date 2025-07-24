@@ -5,12 +5,12 @@ import { useState } from "react";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import type { IMenuItem } from "../../config/menu-item";
 const Siderbar = ({menu}: {menu: Array<IMenuItem>}) => {
-    const [collapsed, setCollapsed] = useState(false);
+const [collapsed, setCollapsed] = useState(true);
 return (
     <>
     <Sider 
       trigger={null} 
-      collapsible 
+      collapsible
       collapsedWidth={90}
       collapsed={collapsed}
       className="bg-gray-900!">

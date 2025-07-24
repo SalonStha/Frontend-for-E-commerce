@@ -73,6 +73,8 @@ function LoginPage() {
                                 label="Enter your email address"
                                 startAdornmentIcon={<MailFilled />}
                                 placeholder="Enter your email address"
+                                disabled={isSubmitting}
+                                loading={isLoading}
                             />
                             <div className='mt-10'>
                                 <PasswordInput
@@ -81,6 +83,8 @@ function LoginPage() {
                                     label="Enter your password"
                                     placeholder="Enter your password"
                                     startAdornmentIcon={<KeyOutlined/>}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div className="mt-2 text-right">

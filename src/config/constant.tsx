@@ -17,7 +17,7 @@ export enum Status {
 
 export const PaginationDefault = {
     page: 1,
-    limit: 7,
+    limit: 6,
     total: 0,
 }
 

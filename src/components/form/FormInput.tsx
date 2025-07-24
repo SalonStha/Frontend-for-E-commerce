@@ -50,6 +50,8 @@ export const EmailTextInput = (props: any) => {
                             type={props.type || 'text'}
                             placeholder={props.placeholder}
                             value={value}
+                            rows={props.rows}
+                            multiline={props.multiline}
                             onChange={({ target: { value } }) => {
                                 onChange(value)
                                 if (props?.setValue) props.setValue(props.name, value)
@@ -344,8 +346,6 @@ export const ImageUploadInput = (props: any) => {
             if (setLogoMode) setLogoMode('removed');
         }
     }, [defaultUrl, defaultName, setLogoMode]);
-
-
     return (
         <Controller
             name={name}
@@ -443,11 +443,11 @@ export const MultipleDropdownInput = (props: any) => {
                             {...params}
                             label={props.label}
                             error={!!error}
-                            helperText={error ? error.message : ''}
+                            helperText={error?.message}
                             variant="outlined"
                             size="small"
                             sx={{
-                                fontFamily: 'poppins',
+                                fontFamily: 'poppins!',
                                 fontSize: '14px',
                                 backgroundColor: '#fff',
                                 '.MuiOutlinedInput-notchedOutline': {
@@ -469,15 +469,12 @@ export const MultipleDropdownInput = (props: any) => {
                                 '.MuiInputLabel-root.Mui-focused': {
                                     color: '#4B0082',
                                 },
+                                '.MuiFormHelperText-root': {
+                                    fontFamily: 'poppins',
+                                },
                             }}
                         />
                     )}
-                    ListboxProps={{
-                        style: {
-                            maxHeight: 200,
-                            overflow: 'auto',
-                        },
-                    }}
                     sx={{
                         '.MuiAutocomplete-tag': {
                             fontFamily: 'poppins',
@@ -485,6 +482,74 @@ export const MultipleDropdownInput = (props: any) => {
                         },
                     }}
                 />
+            )}
+        />
+    );
+}
+export const TagInput = (props: any) => {
+    return (
+        <Controller
+            name={props.name}
+            control={props.control}
+            render={({ field, fieldState: { error } }) => (
+                <>
+                    <Autocomplete
+                        multiple
+                        freeSolo
+                        options={[]}
+                        value={field.value || []}
+                        onChange={(_, newValue) => {
+                            field.onChange(newValue);
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label={props.label}
+                                placeholder={props.placeholder}
+                                error={!!error}
+                                variant="outlined"
+                                size="small"
+                                helperText={props.helperText}
+                                sx={{
+                                    fontFamily: 'poppins',
+                                    fontSize: '14px',
+                                    backgroundColor: '#fff',
+                                    '.MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#4B0082',
+                                        borderWidth: '1.5px',
+                                    },
+                                    '.Mui-focused' : {
+                                        borderColor: '#4B0082',
+                                    },
+                                    '.MuiInputBase-input': {
+                                        fontFamily: 'poppins',
+                                        backgroundColor: '#fff',
+                                    },
+                                    '.MuiInputLabel-root': {
+                                        color: '#4B0082',
+                                        fontFamily: 'poppins',
+                                        fontSize: '14px',
+                                    },
+                                    '.MuiHelperText-root': {
+                                        color: '#4B0082',
+                                        fontFamily: 'poppins',
+                                        fontSize: '14px',
+                                    },
+                                    '.MuiInputLabel-root.Mui-focused': {
+                                        color: '#4B0082',
+                                    },
+                                }}
+                            />
+                        )}
+                        sx={{
+                            '.MuiAutocomplete-tag': {
+                                fontFamily: 'poppins!',
+                                fontSize: '13px',
+                            },
+                        }}
+                    />
+                    {error && <p style={{ color: '#d32f2f', fontFamily: 'poppins', fontSize: '0.75rem', margin: '3px 14px 0' }}>{error.message}</p>}
+                </>
             )}
         />
     );

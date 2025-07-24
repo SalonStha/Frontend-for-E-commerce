@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #1976d2;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box h2 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .solution {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .solution h2 {
+            margin-top: 0;
+            color: #4caf50;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Form Validation Issue - Fixed</h1>
+        
+        <div class="info-box">
+            <h2>Problem Identified</h2>
+            <p>The error messages were appearing in the middle of text fields because:</p>
+            <ul>
+                <li>The form was using a global <code>yupResolver</code> with the complete <code>ProductDTO</code> schema</li>
+                <li>This caused all validation errors to be triggered immediately, even for fields in other steps</li>
+                <li>The step-based validation was conflicting with the global validation</li>
+            </ul>
+        </div>
+
+        <div class="solution">
+            <h2>Solution Applied</h2>
+            <p>I've fixed the issue by:</p>
+            <ul>
+                <li><strong>Removed the global resolver:</strong> The <code>useForm</code> hook no longer uses <code>yupResolver(ProductDTO)</code></li>
+                <li><strong>Implemented step-based validation:</strong> Each step now validates only its own fields</li>
+                <li><strong>Added error clearing:</strong> Errors are cleared when navigating between steps</li>
+                <li><strong>Improved validation flow:</strong> The form validates the current step before allowing navigation</li>
+                <li><strong>Final validation on submit:</strong> All steps are validated before submitting the form</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h2>How It Works Now</h2>
+            <ol>
+                <li><strong>Step Navigation:</strong> When clicking "Next", only the current step's fields are validated</li>
+                <li><strong>Error Display:</strong> Errors are shown only for fields in the current step</li>
+                <li><strong>Going Back:</strong> When clicking "Previous", errors are cleared</li>
+                <li><strong>Final Submit:</strong> All steps are validated sequentially before submission</li>
+            </ol>
+        </div>
+
+        <div class="solution">
+            <h2>Benefits</h2>
+            <ul>
+                <li>✅ No more error messages appearing in the middle of unrelated fields</li>
+                <li>✅ Clean step-by-step validation experience</li>
+                <li>✅ Users can focus on one step at a time</li>
+                <li>✅ Errors are contextual to the current step</li>
+                <li>✅ Better user experience with clear error messaging</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

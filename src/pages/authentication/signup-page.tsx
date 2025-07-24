@@ -12,7 +12,7 @@ import authService from "../../services/auth.service";
 
 const SignUpPage = () => {
     const navigate = useNavigate();
-    const { control, handleSubmit, setValue, setError, formState: { isSubmitting } } = useForm<IRegisterForm>({
+    const { control, handleSubmit, setValue, setError, formState: { isSubmitting, isLoading } } = useForm<IRegisterForm>({
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -37,7 +37,7 @@ const SignUpPage = () => {
         try {
             const response = await authService.registerUser(data)
             toast.success('Successfully registered!', {
-                description: response.message, 
+                description: response.message,
                 richColors: true,
                 closeButton: true,
                 position: 'top-right',
@@ -94,9 +94,9 @@ const SignUpPage = () => {
                                         type="text"
                                         variant="outlined"
                                         placeholder="Enter your first name"
-                                        startAdornmentIcon={
-                                            <UserAddOutlined />
-                                        }
+                                        startAdornmentIcon={<UserAddOutlined />}
+                                        disabled={isSubmitting}
+                                        loading={isLoading}
                                     />
                                 </div>
                                 <div>
@@ -107,6 +107,8 @@ const SignUpPage = () => {
                                         type="text"
                                         placeholder="Enter your last name"
                                         startAdornmentIcon={<UserAddOutlined />}
+                                        disabled={isSubmitting}
+                                        loading={isLoading}
                                     />
                                 </div>
                             </div>
@@ -118,6 +120,8 @@ const SignUpPage = () => {
                                     type="email"
                                     placeholder="Enter your email address"
                                     startAdornmentIcon={<MailFilled />}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div>
@@ -127,6 +131,8 @@ const SignUpPage = () => {
                                     control={control}
                                     placeholder="Enter your password"
                                     startAdornmentIcon={<KeyOutlined />}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div>
@@ -136,6 +142,8 @@ const SignUpPage = () => {
                                     control={control}
                                     placeholder="Confirm your password"
                                     startAdornmentIcon={<KeyOutlined />}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div>
@@ -146,6 +154,8 @@ const SignUpPage = () => {
                                     type="text"
                                     placeholder="Enter your shipping address"
                                     startAdornmentIcon={<ShoppingCartOutlined />}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div>
@@ -156,16 +166,20 @@ const SignUpPage = () => {
                                     type="text"
                                     placeholder="Enter your billing address"
                                     startAdornmentIcon={<ShoppingCartOutlined />}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
 
 
                                 />
                             </div>
-                            <div>
+                            <div >
                                 <PhoneNumberInput
                                     name="phoneNumber"
                                     label="Phone Number"
                                     control={control}
                                     type="number"
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
 
@@ -175,11 +189,15 @@ const SignUpPage = () => {
                                     label="Gender"
                                     control={control}
                                     options={gender}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                                 <DateInput
                                     name="dob"
                                     label="Date of Birth"
                                     control={control}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -198,6 +216,7 @@ const SignUpPage = () => {
                                         }
                                     }}
                                     beforeUpload={() => false}
+                                    disabled={isSubmitting}
                                 >
                                     <Button type="primary"
                                         icon={<UploadOutlined />}
@@ -214,6 +233,8 @@ const SignUpPage = () => {
                                     label="Role"
                                     control={control}
                                     options={role}
+                                    disabled={isSubmitting}
+                                    loading={isLoading}
                                 />
 
                             </div>

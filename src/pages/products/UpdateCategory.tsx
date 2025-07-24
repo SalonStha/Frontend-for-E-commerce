@@ -1,7 +1,7 @@
 import { Button, Divider } from "antd";
 import './../../assets/css/style.css';
 import { DropDownInput, EmailTextInput, ImageUploadInput, MultipleDropdownInput } from "../../components/form/FormInput";
-import { UpdateCategoryDTO, type ICategoryData } from "./Categoryvalidator";
+import { UpdateCategoryDTO, type ICategoryData } from "./ProductValidator";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BarsOutlined, CloudUploadOutlined } from "@ant-design/icons";
