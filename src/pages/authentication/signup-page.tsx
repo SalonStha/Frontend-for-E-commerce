@@ -61,7 +61,7 @@ const SignUpPage = () => {
                 });
             }
             toast.warning('Registration failed:', {
-                description: 'Sorry! The entered email is already registered. Please try with a different email.',
+                description: exception?.message,
             });
         }
     }

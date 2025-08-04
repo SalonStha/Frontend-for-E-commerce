@@ -17,7 +17,7 @@ import './../../assets/css/style.css';
 import { Autocomplete, TextField } from '@mui/material';
 
 
-export const EmailTextInput = (props: any) => {
+export const EmailTextInput = (props: any) => { 
     const { startAdornmentIcon, ...rest } = props;
     const propsObj = { ...rest };
     delete propsObj.setValue;

@@ -5,7 +5,7 @@ interface SpinnerProps {
 }
 export const Spinner = ({
     spinWidth = 4,
-    size = 15,
+    size = 10,
     color = "indigo-600"
 }: SpinnerProps) => {
     const className = `w-${size} h-${size} border-${spinWidth} border-t-${color} border-r-${color} border-l-${color}`

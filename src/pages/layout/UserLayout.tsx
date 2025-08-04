@@ -25,7 +25,7 @@ const UserLayout = ({ menu, role }: Readonly<{ menu: Array<IMenuItem>, role: Use
   if(loggedInUser) {
     if(loggedInUser.role == role) {
       return (
-        <Layout className="h-screen">
+        <Layout hasSider style={{ minHeight: '100vh' }}>
           <Siderbar menu={menu} />
           <Layout>
             <UserHeader/>

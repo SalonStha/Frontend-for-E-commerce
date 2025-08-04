@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Header } from "antd/es/layout/layout";
 import logo from "../../assets/images/logo.png";
@@ -5,16 +6,67 @@ import { useAuth } from "../../context/auth.context";
 import { useNavigate } from "react-router";
 import { toast } from 'sonner';
 import authService from "../../services/auth.service";
-import { BellFilled, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { BellFilled, EditOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from 'antd';
 import { Avatar, Badge, Dropdown, Space } from 'antd';
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+
 
 const UserHeader = () => {
     const { loggedInUser, setLoggedInUserProfile } = useAuth();
     const navigate = useNavigate();
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+    //     const formatNpr = (value: string | number) => {
+    //     const amount = Number(value) / 100;
+    //     // Using en-IN locale for comma separation style (lakh, crore) common in Nepal.
+    //     return `Rs. ${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // };
+
+    // Fetch new orders periodically
+    // useEffect(() => {
+    //     const checkNewOrders = async () => {
+    //         if (loggedInUser && (loggedInUser.role === UserRoles.ADMIN || loggedInUser.role === UserRoles.SELLER)) {
+    //             try {
+    //                 const { data: orders } = await orderService.getRequest('order', {
+    //                     params: {
+    //                         status: 'pending',
+    //                     }
+    //                 }); // Fetch recent pending orders
+    //                 const newCount = orders.length;
+    //                 if (newCount > notificationCount) {
+    //                     // Update notifications and count
+    //                     setNotificationCount(newCount);
+    //                     localStorage.setItem('notificationCount', newCount.toString());
+    //                     setNotifications(orders);
+
+    //                     // Show toast for each new order with product and customer name
+                       
+    //                     orders.slice(notificationCount).forEach((order: any) => {
+    //                         const productName = order['orderDetails'].orderDetails[0]?.name || 'Unknown Product';
+    //                         const customerName = order.user?.name || 'Unknown Customer';
+    //                         toast.success(`New Order: ${productName} by ${customerName}`, {
+    //                             position: 'top-right',
+    //                             duration: 5000,
+    //                             style: {
+    //                                 fontFamily: 'Poppins, sans-serif',
+    //                                 fontSize: '15px',
+    //                                 margin: '10px',
+    //                                 padding: '20px',
+    //                             },
+    //                         });
+    //                     });
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error checking orders:", error);
+    //             }
+    //         }
+    //     };
+
+    //     const interval = setInterval(checkNewOrders, 30000); // Check every 30 seconds
+    //     return () => clearInterval(interval);
+    // }, [loggedInUser, notificationCount]);
 
     const handleLogout = async () => {
         await authService.logoutUser();
@@ -33,10 +85,32 @@ const UserHeader = () => {
         navigate('/');
     };
 
+    // const handleBadgeClick = async () => {
+    //     if (loggedInUser && (loggedInUser.role === UserRoles.ADMIN || loggedInUser.role === UserRoles.SELLER) && notificationCount > 0) {
+    //         try {
+    //             const { data: orders } = await orderService.getRequest('order', {
+    //                 params: {
+    //                     status: 'pending',
+    //                 }
+    //             }); // Fetch latest pending orders
+    //             setNotifications(orders);
+    //             setNotificationDialogOpen(true);
+    //             // Reset badge count and localStorage on click
+    //             setNotificationCount(0);
+    //             localStorage.setItem('notificationCount', '0');
+    //         } catch (error) {
+    //             console.error("Error fetching notifications:", error);
+    //         }
+    //     }
+    // };
+
+    // const handleDialogClose = () => {
+    //     setNotificationDialogOpen(false);
+    // };
+
     const items: MenuProps['items'] = [
         {
             key: 'profile',
-            onClick: () => navigate('/profile'),
             label: (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {loggedInUser && loggedInUser.image && loggedInUser.image.optimizedUrl ? (
@@ -54,6 +128,13 @@ const UserHeader = () => {
             type: 'divider',
         },
         {
+            key: 'editProfile',
+            onClick: () => navigate('/profile'),
+            label: "Edit Profile",
+            icon: <EditOutlined />,
+            className: 'text-indigo-600! hover:bg-indigo-600! hover:text-white!',
+        },
+        {
             key: 'logout',
             danger: true,
             label: 'Logout',
@@ -63,6 +144,7 @@ const UserHeader = () => {
                 setLogoutDialogOpen(true);
             },
         },
+
     ];
 
     return (
@@ -89,8 +171,10 @@ const UserHeader = () => {
                             </Space>
                         </a>
                     </Dropdown>
-                    <Badge count={5} overflowCount={10}>
-                        <BellFilled className="text-2xl text-indigo-500! cursor-pointer" />
+                    <Badge>
+                        <BellFilled
+                            className="text-2xl text-indigo-500! cursor-pointer"
+                        />
                     </Badge>
                 </div>
             </Header>
@@ -145,6 +229,73 @@ const UserHeader = () => {
                     </div>
                 </div>
             </Dialog>
+
+            {/* Notification Dialog */}
+               {/* <Dialog open={notificationDialogOpen} onClose={handleDialogClose} className="relative z-100 font-poppins">
+
+                <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-black/60 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+                />
+                <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                        <DialogPanel
+                            transition
+                            className="relative w-full max-w-xl transform overflow-hidden rounded-md bg-white p-7 text-left shadow-lg transition-all data-closed:scale-95 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+                        >
+                            <div className="flex mb-8">
+                                <DialogTitle as="h3" className="text-lg font-semibold text-gray-800">
+                                    New Orders
+                                </DialogTitle>
+                                 <DialogTitle as="h3" className="text-md font-light text-gray-500">
+                                    Recently ordered items
+                                </DialogTitle>
+                                <button
+                                    onClick={handleDialogClose}
+                                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                {notifications.length > 0 ? (
+                                    <ul className="space-y-5">
+                                        {notifications.map((order: any, index) => (
+                                            <li key={index} className="bg-indigo-50 p-5 rounded-lg shadow-sm hover:bg-gray-100 transition-colors">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-700 mb-2">
+                                                            {order.orderDetails[0].name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {new Date(order.createdAt).toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex flex-col items-start">
+                                                        <span className="text-md font-light text-gray-900">Ordered By:</span>
+                                                          <span className="text-sm font-medium text-green-600">
+                                                        {order.buyer?.firstName + ' ' + order.buyer?.lastName}
+                                                    </span>
+                                                    <span className="text-sm font-medium text-green-600">
+                                                        {formatNpr(order.orderDetails[0].price)}
+                                                    </span>
+                                                    </div>
+                                                  
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-center text-gray-500">No new orders.</p>
+                                )}
+                            </div>
+                         
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog> */}
         </>
     );
 };

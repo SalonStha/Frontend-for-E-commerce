@@ -5,7 +5,7 @@ import { CategoryDTO, type ICategoryData } from "./Categoryvalidator";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BarsOutlined, FileAddOutlined, UploadOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import categoryService from "../../services/category.service";
@@ -70,7 +70,7 @@ const AddCategory = () => {
         { value: 'Inactive', label: 'Inactive' },
     ];
 
-    const submitForm = async (data: ICategoryData) => {
+    const submitForm = useCallback(async (data: ICategoryData) => {
         try {
             await categoryService.createCategory(data);
             toast.success('Category added successfully!', {
@@ -90,7 +90,7 @@ const AddCategory = () => {
                 description: 'An error occurred while adding the product. Please try again.',
             });
         }
-    };
+    },[]) //
 
     return (
         <>

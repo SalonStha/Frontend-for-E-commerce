@@ -39,7 +39,7 @@ const BrandPage = () => {
     const columns = [
         { title: 'Logo', dataIndex: 'logo', key: 'logo', render: (logo: string) => <img src={logo} alt="Brand" style={{ width: '50px', height: '50px' }} /> },
         { title: 'Name', dataIndex: 'name', key: 'name', },
-        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-700 text-white rounded-md p-1.5 text-xs! font-light">Active</span> : <span className="bg-red-500 text-white rounded-md p-1.5">Inactive</span> },
+        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-500/10 text-green-500/90 rounded-md p-1.5">Active</span> : <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Inactive</span> },
         {
             title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: IBrandData) => {
                 return (

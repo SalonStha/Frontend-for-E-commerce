@@ -156,7 +156,7 @@ const ProductPage = () => {
         //         );
         //     }
         // },
-        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-700 text-white rounded-md p-1.5 text-xs! font-light">Active</span> : <span className="bg-red-500 text-white rounded-md p-1.5">Inactive</span> },
+        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-500/10 text-green-500/90 rounded-md p-1.5">Active</span> : <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Inactive</span> },
         {
             title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: IProductData) => {
                 return (
@@ -194,7 +194,9 @@ const ProductPage = () => {
                     search: search,
                 }
             });
-            setData(response.data);
+            // Filter out products with stock 0
+            const filteredData = response.data.filter((product: IProductData) => Number(product.stock) > 0);
+            setData(filteredData);
             console.log(response);
             setPagination({
                 current: response.options.page,
@@ -226,8 +228,8 @@ const ProductPage = () => {
                 limit: PaginationDefault.limit,
                 search: search,
             });
-        }, 1000);
-        return () => clearTimeout(timer);
+        }, 1000); 
+        return () => clearTimeout(timer); 
     }, [search]); //Timeout search
 
 

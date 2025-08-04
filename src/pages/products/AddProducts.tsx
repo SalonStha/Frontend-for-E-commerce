@@ -3,7 +3,7 @@ import './../../assets/css/style.css';
 import { CheckboxInput, DropDownInput, EmailTextInput, MultipleDropdownInput, TagInput } from "../../components/form/FormInput";
 import { ProductDTO, type IProductData } from "./ProductValidator";
 import { useForm } from "react-hook-form";
-import { AppstoreAddOutlined, BarsOutlined, BgColorsOutlined, DollarCircleFilled, DollarCircleTwoTone, DoubleLeftOutlined, HomeFilled, ProductFilled, ProductOutlined, UploadOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, BarsOutlined, BgColorsOutlined, DollarCircleTwoTone, HomeFilled, ProductFilled, ProductOutlined, UploadOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";

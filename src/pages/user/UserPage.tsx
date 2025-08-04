@@ -1,4 +1,4 @@
-import { EditFilled, FileAddFilled, DeleteFilled, UserOutlined, HomeFilled } from "@ant-design/icons";
+import { EditFilled, DeleteFilled, UserOutlined, HomeFilled } from "@ant-design/icons";
 import { Divider } from "@mui/material";
 import { Breadcrumb, Button, Input, Table } from "antd";
 import { NavLink } from "react-router";
@@ -39,15 +39,15 @@ const UserPage = () => {
     //eslint-disable-next-line
     const renderRoleTag = (role: any) => {
         if (role === UserRoles.ADMIN) {
-            return <span className="bg-fuchsia-600 text-white rounded-md p-1.5 text-xs font-light">Admin</span>;
+            return <span className="bg-fuchsia-500/10 text-fuchsia-500/90 rounded-md p-1.5">Admin</span>;
         }
         if (role === UserRoles.SELLER) {
-            return <span className="bg-blue-600 text-white rounded-md p-1.5 text-xs font-light">Seller</span>;
+            return <span className="bg-blue-500/10 text-blue-500/90 rounded-md p-1.5">Seller</span>;
         }
         if (role === UserRoles.CUSTOMER) {
-            return <span className="bg-indigo-600 text-white rounded-md p-1.5 text-xs font-light">Customer</span>;
+            return <span className="bg-indigo-500/10 text-indigo-500/90 rounded-md p-1.5">Customer</span>;
         }
-        return <span className="bg-gray-300 text-black rounded-md p-1.5 text-xs font-light">{role}</span>;
+        return <span className="bg-gray-300 text-black rounded-md p-1.5">{role}</span>;
     };
     const columns = [
         {
@@ -75,7 +75,7 @@ const UserPage = () => {
         { title: 'Phone Number', dataIndex: 'phoneNumber', key: 'phoneNumber' },
         { title: 'Gender', dataIndex: 'gender', key: 'gender' },
         { title: 'Role', dataIndex: 'role', key: 'role', render: renderRoleTag },
-        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-700 text-white rounded-md p-1.5 text-xs! font-light">Active</span> : <span className="bg-red-500 text-white rounded-md p-1.5">Inactive</span> },
+        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-500/10 text-green-500/90 rounded-md p-1.5">Active</span> : <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Inactive</span> },
         {
             title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: IRegisterForm) => {
                 return (
@@ -246,6 +246,7 @@ const UserPage = () => {
                             placeholder="Type to search..."
                             className="ant-search"
                             size="large"
+                            value={search}
                             onChange={(e) => {
                                 setSearch(e.target.value);
                             }}
@@ -258,11 +259,6 @@ const UserPage = () => {
                             }}
                             enterButton
                         />
-                        <NavLink to='/admin/users/create'>
-                            <Button icon={<FileAddFilled />} type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9.5!">
-                                Add User
-                            </Button>
-                        </NavLink>
                     </div>
 
                 </div>

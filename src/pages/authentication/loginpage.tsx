@@ -13,11 +13,12 @@ import { KeyOutlined, LoginOutlined, MailFilled } from '@ant-design/icons';
 import { Button } from 'antd';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/auth.context';
+import { useCallback } from 'react';
 
 
 function LoginPage() {
     const navigate = useNavigate();
-    const { control, handleSubmit,formState:{isLoading, isSubmitting}, setError } = useForm<ICredentials>({ // React Hook Form for form handling
+    const { control, handleSubmit, formState:{isLoading, isSubmitting}, setError } = useForm<ICredentials>({ // React Hook Form for form handling
         defaultValues: {
             email: '',
             password: '',
@@ -27,7 +28,7 @@ function LoginPage() {
 
     const {setLoggedInUserProfile} = useAuth(); // Custom hook to access authentication context
 
-    const submitForm = async (credentials: ICredentials) => {
+    const submitForm = useCallback(async (credentials: ICredentials) => {
         try{
             await authService.loginUser(credentials);
             const userProfile = await authService.getUserProfile();
@@ -52,7 +53,7 @@ function LoginPage() {
             });
         }
         
-    }
+    },[])
     const {loggedInUser} = useAuth(); // Custom hook to access authentication context
     if (loggedInUser) {
         return <Navigate to={`/${loggedInUser.role}`} />;

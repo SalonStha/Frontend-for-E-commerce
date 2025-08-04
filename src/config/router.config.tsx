@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import LoginPage from "../pages/authentication/loginpage";
 import SignupPage from "../pages/authentication/signup-page";
@@ -10,9 +11,9 @@ import ResetPassword from "../pages/authentication/reset-password";
 import { Toaster } from 'sonner';
 import  AdminDashboard  from "../pages/dashboard/AdminDashboard";
 import { UserRoles } from "./constant";
-import BannerPage from "../pages/banner/BannerPage";
 import BrandPage from "../pages/brand/BrandPage";
-import ProductsPage from "../pages/products/ProductsPage";
+import BannerPage from "../pages/banner/BannerPage";
+const ProductsPage = lazy(async() => await  import("../pages/products/ProductsPage"))
 import UserPage from "../pages/user/UserPage";
 import AddBrand from "../pages/brand/AddBrand";
 import UpdateBrand from "../pages/brand/UpdateBrand";
@@ -21,6 +22,13 @@ import AddCategory from "../pages/categories/AddCategory";
 import UpdateCategory from "../pages/categories/UpdateCategory";
 import UpdateUser from "../pages/user/UpdateUser";
 import AddProduct from "../pages/products/AddProducts";
+import OrderPage from "../pages/orders/OrderPage";
+import OrderDetailPage from "../pages/orders/OrderDetailPage";
+import AddBanner from "../pages/banner/AddBanner";
+import UpdateBanner from "../pages/banner/UpdateBanner";
+import { SellerDashboard } from "../pages/dashboard/SellerDashboard";
+import ChatPage from "../pages/chat/ChatPage";
+
 
 
 
@@ -51,7 +59,11 @@ const routerConfig = createBrowserRouter([ // Creating a browser router configur
     },
     {
         path: "/admin",
-        element: <UserLayout role= {UserRoles.ADMIN} menu={AdminMenu} />,
+        element: (
+            <Suspense>
+                <UserLayout role= {UserRoles.ADMIN} menu={AdminMenu} />
+            </Suspense>
+        ),
         children: [
             { index: true, Component: AdminDashboard },
             { path: "users", Component: UserPage }, 
@@ -65,15 +77,26 @@ const routerConfig = createBrowserRouter([ // Creating a browser router configur
             { path: "category/:id", Component: UpdateCategory }, 
             { path: "category/create", Component: AddCategory },
             { path: "transactions", Component: AdminDashboard },
-            { path: "orders", Component: AdminDashboard },
+            { path: "orders", Component: OrderPage },
+            { path: "orders/:id", Component: OrderDetailPage },
             { path: "banners", Component: BannerPage },
-            { path: "chats", Component: AdminDashboard },
+            { path: "banners/create", Component: AddBanner },
+            { path: "banners/:id", Component: UpdateBanner },
+            { path: "chats", Component: ChatPage },
             { path: "*", Component: NotFoundPage },
         ] // Using 'element' to render the UserLayout with AdminMenu
     },
     {
-        path: "/Seller",
-        element: <UserLayout role= {UserRoles.SELLER} menu={SellerMenu} />, // Using 'element' to render the UserLayout with SellerMenu
+        path: "/seller",
+        element: (
+            <Suspense>
+                <UserLayout role= {UserRoles.SELLER} menu={SellerMenu} />
+            </Suspense>
+        ),
+        children: [
+            { index: true, Component: SellerDashboard },
+            {path: "chats", Component: ChatPage}
+        ]
     },
     {
         path: "/Seller",

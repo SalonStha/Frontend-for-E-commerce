@@ -4,20 +4,23 @@ import { Menu, Button } from "antd";
 import { useState } from "react";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import type { IMenuItem } from "../../config/menu-item";
-const Siderbar = ({menu}: {menu: Array<IMenuItem>}) => {
-const [collapsed, setCollapsed] = useState(true);
-return (
+const Siderbar = ({ menu }: { menu: Array<IMenuItem> }) => {
+  const [collapsed, setCollapsed] = useState(true);
+
+  return (
     <>
-    <Sider 
-      trigger={null} 
-      collapsible
-      collapsedWidth={90}
-      collapsed={collapsed}
-      className="bg-gray-900!">
+      <Sider
+        trigger={null}
+        collapsible
+        collapsedWidth={90}
+        collapsed={collapsed}
+        className="bg-gray-900! text-white"
+
+      >
         <div className="flex-col w-full items-start justify-center mt-5 mb-3 ml-7">
-        <Button
+          <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               fontSize: '18px',
@@ -26,19 +29,19 @@ return (
           />
         </div>
         <Menu
-        theme='dark'
+          theme='dark'
           mode="inline"
           className="bg-gray-900! text-white"
           defaultSelectedKeys={['1']}
           style={{
             fontFamily: 'Poppins, sans-serif',
-            fontSize: '14px',
-            color: '#fff',
+            fontSize: '13px'
           }}
           items={menu}
+
         />
       </Sider>
     </>
-)
+  )
 }
 export default Siderbar;

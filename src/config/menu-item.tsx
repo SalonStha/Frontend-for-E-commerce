@@ -29,21 +29,16 @@ export const AdminMenu = [
     },
     {
         key: '6',
-        icon: <TransactionOutlined />,
-        label: <NavLink to='/admin/transactions'>Transactions</NavLink>,
-    },
-    {
-        key: '7',
         icon: <OrderedListOutlined />,
         label: <NavLink to='/admin/orders'>Orders</NavLink>,
     },
     {
-        key: '8',
+        key: '7',
         icon: <FileImageFilled/>,
         label: <NavLink to='/admin/banners'>Banners</NavLink>,
     },
     {
-        key: '9',
+        key: '8',
         icon: <MessageFilled/>,
         label: <NavLink to='/admin/chats'>Chats</NavLink>,
     },
@@ -74,6 +69,11 @@ export const SellerMenu = [
         key: '5',
         icon: <OrderedListOutlined />,
         label: 'Orders',
+    },
+    {
+        key: '6',
+        icon: <MessageFilled/>,
+        label: <NavLink to='/seller/chats'>Chats</NavLink>,
     },
 
 ]

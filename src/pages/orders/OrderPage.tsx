@@ -1,88 +1,175 @@
-import { EditFilled, FileAddFilled, DeleteFilled, HomeFilled, ApartmentOutlined } from "@ant-design/icons";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {  HomeFilled, OrderedListOutlined,ArrowRightOutlined } from "@ant-design/icons";
 import { Divider } from "@mui/material";
-import { Breadcrumb, Button, Input, Table, Tag } from "antd";
+import { Breadcrumb, Button, Input, Table, } from "antd";
 import { NavLink } from "react-router";
 import './../../assets/css/style.css';
-import type { ICategoryData } from "./Categoryvalidator";
+
 import { useEffect, useState } from "react";
-import categoryService from "../../services/category.service";
+
 import { toast } from "sonner";
-import { PaginationDefault, Status, type IPagination, type IPaginationSearch } from "../../config/constant";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { OrderStatus, PaginationDefault, type IPagination, type IPaginationSearch , PaymentMethod } from "../../config/constant";
 
-const CategoryPage = () => {
+import orderService from "../../services/order.service";
 
-    const [open, setOpen] = useState(false);
 
-    const [selectedCategory, setselectedCategory] = useState<ICategoryData | null>(null);
+const OrderPage = () => {
+
+    const formatNpr = (value: string | number) => {
+        const amount = Number(value) / 100;
+        // Using en-IN locale for comma separation style (lakh, crore) common in Nepal.
+        return `Rs. ${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
 
     const [loading, setLoading] = useState(false);
-
-    const handleDelete = async (categoryId: string) => {
-        setLoading(true);
-        try {
-            await categoryService.deleteRequest('category/' + categoryId);
-            toast.success('Category deleted successfully!', {
-                description: 'The selected category has been successfully deleted.',
-            });
-            await getCategories({ page: PaginationDefault.page, limit: PaginationDefault.limit })
-        } catch {
-            toast.error('Failed to delete category:', {
-                description: 'An error occurred while deleting the brand. Please try again.',
-            });
+    const renderOrderStatusTag = (orderStatus: any) => {
+        if (orderStatus === OrderStatus.PROCESSING) {
+            return <span className="bg-green-600/10 text-green-600/90 rounded-md p-1.5 font-light">Processing</span>;
         }
-        setOpen(false);
-        setselectedCategory(null);
-        setLoading(false);
+        if (orderStatus === OrderStatus.COMPLETED) {
+            return <span className="bg-indigo-600/15 text-indigo-600/90 rounded-md p-1.5">Completed</span>;
+        }
+        if (orderStatus === OrderStatus.CANCELLED) {
+            return <span className="bg-indigo-600/10 text-white rounded-md p-1.5 font-light">Cancelled</span>;
+        }
+        if (orderStatus === OrderStatus.DELIVERED) {
+            return <span className="bg-indigo-600/35 text-white rounded-md p-1.5 font-light">Delivered</span>;
+        }
+        if (orderStatus === OrderStatus.PENDING) {
+            return <span className="bg-yellow-600/10 text-yellow-600 rounded-md p-1.5 font-light">Pending</span>;
+        }
+        return <span className="bg-gray-300 text-black rounded-md p-1.5 font-light">{orderStatus}</span>;
     };
+    const renderPaymentMethodTag = (orderStatus: any) => {
+        if (orderStatus === PaymentMethod.CASH_ON_DELIVERY) {
+            return <span className="bg-green-600/10 text-green-600/90 rounded-md p-1.5 font-light">COD</span>;
+        }
+        if (orderStatus === PaymentMethod.KHALTI) {
+            return <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Khalti</span>;
+        }
+        if (orderStatus === PaymentMethod.ESEWA) {
+            return <span className="bg-indigo-600/10 text-white rounded-md p-1.5 font-light">Esewa</span>;
+        }
+        if (orderStatus === PaymentMethod.BANK) {
+            return <span className="bg-indigo-600/35 text-white rounded-md p-1.5 font-light">Bank Transfer</span>;
+        }
+        if (orderStatus === PaymentMethod.FONEPAY) {
+            return <span className="bg-yellow-600/10 text-yellow-600 rounded-md p-1.5 font-light">FonePay</span>;
+        }
+        return <span className="bg-gray-300 text-black rounded-md p-1.5 font-light">{orderStatus}</span>;
+    };
+
     const columns = [
-        { title: 'Icon', dataIndex: 'icon', key: 'icon', render: (icon: string) => <img src={icon} alt="Brand" style={{ width: '50px', height: '50px' }} /> },
-        { title: 'Sub Category', dataIndex: 'name', key: 'name', },
-        { title: 'Main Category', dataIndex: 'parentId', key: 'parentId', render: (parentCategory: { name?: string } | undefined) => parentCategory?.name || '-' },
         {
-            title: 'Brand',
-            dataIndex: 'brands',
-            key: 'brands',
-            render: (brands: { name: string }[] = []) => {
-                const colors = ['#6366f1', '#22d3ee', '#f59e42', '#10b981', '#ef4444', '#a21caf', '#fbbf24'];
+            title: 'Order',
+            dataIndex: 'code',
+            key: 'code',
+            render: (
+                code: string,
+                record: {
+                    orderDetails?: { name?: string }[]
+                }
+            ) => {
+                const productNames = record.orderDetails
+                    ?.map((item) => item.name)
+                    .filter(Boolean)
+                    .join(', ');
                 return (
-                    <>
-                        {brands.map((b, idx) => (
-                            <Tag key={idx} style={{ backgroundColor: colors[idx % colors.length], color: '#fff', border: 'none', marginBottom: 2 }}>
-                                {b.name}
-                            </Tag>
-                        ))}
-                    </>
-                );
+                    <div className="flex flex-col">
+                              {productNames && (
+                            <span className="text-gray-900 text-l mb-1 font-semibold">
+                                {productNames}
+                            </span>
+                        )}
+                        <span className="text-slate-950/60 text-sm">
+                            #{code}
+                        </span>
+                  
+                    </div>
+                )
             }
         },
-        { title: 'Home Feature', dataIndex: 'homeFeature', key: 'homeFeature', render: (homeFeature: boolean) => homeFeature ? 'Yes' : 'No' },
-        { title: 'Show In Menu', dataIndex: 'showInMenu', key: 'showInMenu', render: (showInMenu: boolean) => showInMenu ? 'Yes' : 'No' },
-        { title: 'Status', dataIndex: 'status', key: 'status', render: (status: string) => (status === Status.ACTIVE) ? <span className="bg-green-500/10 text-green-500/90 rounded-md p-1.5">Active</span> : <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Inactive</span> },
         {
-            title: 'Actions', dataIndex: '_id', key: 'actions', render: (id: string, data: ICategoryData) => {
+            title: 'Customer Name',
+            dataIndex: 'buyer',
+            key: 'buyer',
+            render: (buyer: { firstName?: string, lastName?: string }) => (
+                <span>
+                    {(buyer?.firstName || '') + ' ' + (buyer?.lastName || '')}
+                </span>
+            ),
+        },
+        // {
+        //     title: 'Gross Total', dataIndex: 'grossTotal', key: 'grossTotal', render: (grossTotal: string) => {
+        //         return (
+        //             <span className="text-amber-600 font-semibold">
+        //                 {formatNpr(grossTotal)}
+        //             </span>
+        //         )
+        //     }
+        // },
+        // {
+        //     title: 'Sub Total', dataIndex: 'subTotal', key: 'subTotal', render: (subTotal: string) => {
+        //         return (
+        //             <span className="text-fuchsia-600 font-semibold">
+        //                 {formatNpr(subTotal)}
+        //             </span>
+        //         )
+        //     }
+        // },
+        // {
+        //     title: 'Tax (13%)', dataIndex: 'tax', key: 'tax', render: (tax: string) => {
+        //         return (
+        //             <span className="text-slate-950 font-medium">
+        //                 {formatNpr(tax)}
+        //             </span>
+        //         )
+        //     }
+        // },
+        {
+            title: 'Total', dataIndex: 'total', key: 'total', render: (total: string) => {
+                return (
+                    <span className="text-pink-600/80 font-semibold">
+                        {formatNpr(total)}
+                    </span>
+                )
+            }
+        },
+        {
+            title: 'Created At', dataIndex: 'createdAt', key: 'createdAt', render: (createdAt: string) => {
+                return new Date(createdAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        },
+        { title: 'Order Status', dataIndex: 'status', key: 'status', render: renderOrderStatusTag },
+        { title: 'Payment Method', dataIndex: 'paymentMethod', key: 'paymentMethod', render: renderPaymentMethodTag },
+        { title: 'Transaction Status', dataIndex: 'isPaid', key: 'isPaid', render: (isPaid: boolean) => isPaid ? <span className="bg-green-700/10 text-green-700/90 rounded-md p-1.5">Paid</span> : <span className="bg-red-500/10 text-red-500/90 rounded-md p-1.5">Not Paid</span> },
+        {
+            title: 'Order Details', dataIndex: 'code', key: 'actions', render: (code: string) => {
                 return (
                     <>
-                        <NavLink to={'/admin/category/' + id}>
-                            <Button type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9! mr-2"><EditFilled /></Button>
+                        <NavLink to={'/admin/orders/' + code}>
+                            <Button type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-2 h-9! mr-2"><ArrowRightOutlined/></Button>
                         </NavLink>
-                        <Button type="primary" danger className="items-center p-3! h-9!" onClick={() => { setOpen(true); setselectedCategory(data); }}><DeleteFilled /></Button>
                     </>
                 )
             }
         }
-
     ];
     const [search, setSearch] = useState<string>('');
-    const [data, setData] = useState<ICategoryData[]>([]);
+    const [data, setData] = useState();
     const [pagination, setPagination] = useState<IPagination>({
         current: PaginationDefault.page,
         pageSize: PaginationDefault.limit,
         total: PaginationDefault.total,
     });
 
-    const getCategories = async (
+    const getOrders = async (
         {
             page = PaginationDefault.page,
             limit = PaginationDefault.limit,
@@ -90,7 +177,7 @@ const CategoryPage = () => {
         }: IPaginationSearch) => {
         setLoading(true);
         try {
-            const response = await categoryService.getRequest('/category', {
+            const response = await orderService.getRequest('order', {
                 params: {
                     page: page,
                     limit: limit,
@@ -115,7 +202,7 @@ const CategoryPage = () => {
     };
 
     // useEffect(() => {
-    //     getCategories({
+    //     getOrders({
     //         page: PaginationDefault.page,
     //         limit: PaginationDefault.limit,
     //         search: null,
@@ -124,7 +211,7 @@ const CategoryPage = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            getCategories({
+            getOrders({
                 page: PaginationDefault.page,
                 limit: PaginationDefault.limit,
                 search: search,
@@ -135,7 +222,7 @@ const CategoryPage = () => {
 
 
     const onPaginationChange = async (page: number, pageSize: number) => {
-        await getCategories({
+        await getOrders({
             page: page,
             limit: pageSize,
         });
@@ -163,7 +250,7 @@ const CategoryPage = () => {
                         gap: '20px',
                     }}>
                         <div className="dual-ring-spinner" style={{ width: 64, height: 64 }} />
-                        <span style={{ fontSize: 20, color: '#fff', fontFamily: 'Poppins, sans-serif', fontWeight: 500 }}>Loading categories...</span>
+                        <span style={{ fontSize: 20, color: '#fff', fontFamily: 'Poppins, sans-serif', fontWeight: 500 }}>Loading orders...</span>
                     </div>
                     <style>{`
                         .dual-ring-spinner {
@@ -195,7 +282,7 @@ const CategoryPage = () => {
             }}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-poppins! font-semibold mb-2">Categories</h2>
+                        <h2 className="text-2xl font-poppins! font-semibold mb-2">Orders</h2>
                         <Breadcrumb
                             style={{
                                 margin: '16px 0',
@@ -217,8 +304,8 @@ const CategoryPage = () => {
                                 {
                                     title: (
                                         <>
-                                            <ApartmentOutlined />
-                                            <span>Category</span>
+                                            <OrderedListOutlined />
+                                            <span>Orders</span>
                                         </>
                                     ),
                                 },
@@ -242,11 +329,11 @@ const CategoryPage = () => {
                             }}
                             enterButton
                         />
-                        <NavLink to='/admin/category/create'>
+                        {/* <NavLink to='/admin/category/create'>
                             <Button icon={<FileAddFilled />} type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9.5!">
                                 Add category
                             </Button>
-                        </NavLink>
+                        </NavLink> */}
                     </div>
 
                 </div>
@@ -261,10 +348,10 @@ const CategoryPage = () => {
                         }}
                         scroll={{ x: 1200, y: 600 }}
                         className="poppins-table border-1! border-gray-300! rounded-lg! shadow-lg!"
-                        style={{ fontFamily: 'Poppins, sans-serif', fontSize: '15px' }}
+                        style={{ fontFamily: 'Poppins, sans-serif', fontSize: '30px' }}
                         rowKey="_id"
                     />
-                    <Dialog open={open} onClose={() => { setOpen(false); setselectedCategory(null); }} className="relative z-10">
+                    {/* <Dialog open={open} onClose={() => { setOpen(false); setselectedCategory(null); }} className="relative z-10">
                         <DialogBackdrop
                             transition
                             className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -317,11 +404,11 @@ const CategoryPage = () => {
                                 </DialogPanel>
                             </div>
                         </div>
-                    </Dialog>
+                    </Dialog> */}
                 </div>
             </div>
         </>
     )
 }
 
-export default CategoryPage;
+export default OrderPage;
