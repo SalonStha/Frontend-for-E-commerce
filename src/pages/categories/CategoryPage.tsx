@@ -1,6 +1,6 @@
 import { EditFilled, FileAddFilled, DeleteFilled, HomeFilled, ApartmentOutlined } from "@ant-design/icons";
 import { Divider } from "@mui/material";
-import { Breadcrumb, Button, Input, Table, Tag } from "antd";
+import { Breadcrumb, Button, Table, Tag } from "antd";
 import { NavLink } from "react-router";
 import './../../assets/css/style.css';
 import type { ICategoryData } from "./Categoryvalidator";
@@ -225,30 +225,31 @@ const CategoryPage = () => {
                             ]}
                         />
                     </div>
-                    <div className="flex justify-center! items-center! gap-5">
-                        <Input.Search
-                            placeholder="Type to search..."
-                            className="ant-search"
-                            size="large"
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                            }}
-                            allowClear
-                            style={{
-                                fontFamily: 'Poppins!, sans-serif',
-                                fontSize: '15px',
-                                margin: '10px',
-                                width: '300px'
-                            }}
-                            enterButton
-                        />
+                    <div className="flex items-center! gap-3">
+                        <div className="relative">
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="search"
+                                id="default-search"
+                                className="block w-[300px] p-3.5 ps-10 text-sm rounded-xl bg-gray-50 border-2 border-gray-300 focus:outline"
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                }}
+                                placeholder="Search categories..."
+                                autoComplete="off"
+                                required />
+                        </div>
                         <NavLink to='/admin/category/create'>
-                            <Button icon={<FileAddFilled />} type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center p-3! h-9.5!">
-                                Add category
+                            <Button icon={<FileAddFilled />} type="primary" className="!bg-indigo-500 hover:!bg-indigo-600 items-center h-12! rounded-xl!">
+                                Add Category
                             </Button>
                         </NavLink>
                     </div>
-
                 </div>
                 <Divider className="mb-4" />
                 <div className="mt-7">

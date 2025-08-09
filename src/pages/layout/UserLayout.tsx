@@ -1,4 +1,4 @@
-import { Navigate, Outlet} from 'react-router';
+import { Navigate, Outlet } from 'react-router';
 import { Layout } from 'antd';
 import Siderbar from '../../components/sidebar/sidebar';
 import UserHeader from '../../components/header/UserHeader';
@@ -6,13 +6,11 @@ import { type IMenuItem } from '../../config/menu-item';
 import { useAuth } from '../../context/auth.context';
 import { toast } from 'sonner';
 import type { UserRoles } from '../../config/constant';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Content } from 'antd/es/layout/layout';
 
-
-const UserLayout = ({ menu, role }: Readonly<{ menu: Array<IMenuItem>, role: UserRoles}>) => {
-  const {loggedInUser} = useAuth();
+const UserLayout = ({ menu, role }: Readonly<{ menu: Array<IMenuItem>, role: UserRoles }>) => {
+  const { loggedInUser } = useAuth();
   const [shouldNavigate, setShouldNavigate] = useState(false);
   const [navigateTo, setNavigateTo] = useState<string | null>(null);
 
@@ -22,15 +20,15 @@ const UserLayout = ({ menu, role }: Readonly<{ menu: Array<IMenuItem>, role: Use
     }
   }, [shouldNavigate, navigateTo]);
 
-  if(loggedInUser) {
-    if(loggedInUser.role == role) {
+  if (loggedInUser) {
+    if (loggedInUser.role === role) {
       return (
-        <Layout hasSider style={{ minHeight: '100vh' }}>
+        <Layout className="h-screen">
           <Siderbar menu={menu} />
           <Layout>
-            <UserHeader/>
-            <Content>
-                <Outlet />
+            <UserHeader />
+            <Content className="flex-1 min-h-0 overflow-y-auto">
+              <Outlet />
             </Content>
           </Layout>
         </Layout>
@@ -43,13 +41,14 @@ const UserLayout = ({ menu, role }: Readonly<{ menu: Array<IMenuItem>, role: Use
         setTimeout(() => {
           setNavigateTo('/' + loggedInUser.role);
           setShouldNavigate(true);
-        }, 100); 
+        }, 100);
       }
       if (shouldNavigate && navigateTo) {
-        return <Navigate to={navigateTo}/>;
+        return <Navigate to={navigateTo} />;
       }
       return null;
     }
-  } 
+  }
 };
-export default UserLayout; 
+
+export default UserLayout;

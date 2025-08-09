@@ -1,6 +1,6 @@
 import { EditFilled, DeleteFilled, UserOutlined, HomeFilled } from "@ant-design/icons";
 import { Divider } from "@mui/material";
-import { Breadcrumb, Button, Input, Table } from "antd";
+import { Breadcrumb, Button, Table } from "antd";
 import { NavLink } from "react-router";
 import './../../assets/css/style.css';
 import { useEffect, useState } from "react";
@@ -211,56 +211,54 @@ const UserPage = () => {
             }}>
                 <div className="flex items-center justify-between">
                     <div>
-                    <h2 className="text-2xl font-poppins! font-semibold mb-2">Users</h2>
-                    <Breadcrumb
-                    style={{
-                        margin: '16px 0',
-                        fontFamily: 'Poppins, sans-serif',
-                        color: '#fffff',
-                        fontSize: '15px',
-                        fontWeight: '500',
-                    }}
-                        items={[
-                            {
-                                href: '/admin',
-                                title: (
-                                    <>
-                                        <HomeFilled/>
-                                        <span>Dashboard</span>
-                                    </>
-                                ),
-                            },
-                            {
-                                title: (
-                                    <>
-                                        <UserOutlined />
-                                        <span>Users</span>
-                                    </>
-                                ),
-                            },
-                        ]}
-                    />
-                    </div> 
-                    <div className="flex justify-center! items-center! gap-5">
-                        <Input.Search
-                            placeholder="Type to search..."
-                            className="ant-search"
-                            size="large"
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                            }}
-                            allowClear
+                        <h2 className="text-2xl font-poppins! font-semibold mb-2">Users</h2>
+                        <Breadcrumb
                             style={{
-                                fontFamily: 'Poppins!, sans-serif',
+                                margin: '16px 0',
+                                fontFamily: 'Poppins, sans-serif',
+                                color: '#fffff',
                                 fontSize: '15px',
-                                margin: '10px',
-                                width: '300px'
+                                fontWeight: '500',
                             }}
-                            enterButton
+                            items={[
+                                {
+                                    href: '/admin',
+                                    title: (
+                                        <>
+                                            <HomeFilled />
+                                            <span>Dashboard</span>
+                                        </>
+                                    ),
+                                },
+                                {
+                                    title: (
+                                        <>
+                                            <UserOutlined />
+                                            <span>Users</span>
+                                        </>
+                                    ),
+                                },
+                            ]}
                         />
                     </div>
-
+                        <div className="relative">
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="search"
+                                id="default-search"
+                                className="block w-[400px] p-3.5 ps-10 text-sm rounded-xl bg-gray-50 border-2 border-gray-300 focus:outline"
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                }} 
+                                placeholder="Search users..." 
+                                autoComplete="off"
+                                required />
+                        </div>
                 </div>
                 <Divider className="mb-4" />
                 <div className="mt-7">
